@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Word Streak Duels — Skeleton</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Instant Games SDK is injected on Facebook; for local preview we mock FBInstant in game.js -->
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Word Streak Duels</h1>
+        <p id="status">Booting…</p>
+      </header>
+
+      <main>
+        <section id="hud">
+          <div>Seed: <strong id="seed">—</strong></div>
+          <div>Time: <strong id="timer">60</strong>s</div>
+          <div>Score: <strong id="score">0</strong></div>
+        </section>
+
+        <section id="play">
+          <input id="wordInput" type="text" autocomplete="off" autocapitalize="characters" placeholder="Type a word…" disabled />
+          <button id="submitBtn" type="button" disabled>Play word</button>
+          <ul id="chain"></ul>
+        </section>
+
+        <section id="end" hidden>
+          <h2>Round over</h2>
+          <p>Final score: <strong id="finalScore">0</strong></p>
+          <button id="shareBtn" type="button">Challenge a friend (social stub)</button>
+          <button id="replayBtn" type="button">Play again</button>
+        </section>
+      </main>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>

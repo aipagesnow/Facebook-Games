@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-electron/
+out/
+release/
+
+# Env / local secrets
+.env
+.env.local
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local app data (keep sample structure)
+data/settings.local.json
+data/library/*.json
+!data/library/.gitkeep
+
+# Generated game builds (large)
+games/**/dist/
+games/**/node_modules/

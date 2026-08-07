@@ -1,0 +1,78 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0f1724;
+  color: #eef3fb;
+}
+
+#app {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+#status {
+  margin: 0 0 16px;
+  color: #9db0c9;
+  font-size: 0.85rem;
+}
+
+#hud {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+#wordInput {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #2a3b55;
+  background: #121c2b;
+  color: inherit;
+  margin-bottom: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: #1877f2;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#chain {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#chain li {
+  background: #1a2740;
+  border: 1px solid #2a3b55;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
