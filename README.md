@@ -14,7 +14,23 @@ Local folder: `C:\Users\chris\OneDrive\Desktop\Facebook-Games`
 
 ---
 
-## Quick start
+## Quick start (double-click)
+
+**Easiest:** double-click  
+`Launch Facebook Games Studio.bat`  
+in this folder.
+
+Optional Desktop icon (run once in PowerShell from this folder):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ".\Create Desktop Shortcut.ps1"
+```
+
+Then double-click **Facebook Games Studio** on your Desktop.
+
+First launch may take a minute (install + build). After that it opens quickly.
+
+### Dev mode (hot reload while editing the studio)
 
 ```bash
 cd C:\Users\chris\OneDrive\Desktop\Facebook-Games
@@ -22,14 +38,13 @@ npm install
 npm run dev
 ```
 
-This starts Vite and opens the **Electron** window.  
 Browser-only UI preview (no local folder scanning):
 
 ```bash
 npm run dev:web
 ```
 
-Production renderer build:
+Production build + start from terminal:
 
 ```bash
 npm run build
