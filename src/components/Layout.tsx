@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { requestStudioRefresh } from '../hooks/useAutoRefresh';
 
 const links = [
   { to: '/', label: 'Dashboard', icon: '◆', end: true },
@@ -9,6 +11,14 @@ const links = [
 ];
 
 export function Layout() {
+  const [pulse, setPulse] = useState(false);
+
+  function handleRefresh() {
+    requestStudioRefresh();
+    setPulse(true);
+    window.setTimeout(() => setPulse(false), 900);
+  }
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -33,6 +43,16 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        <div className="sidebar-tools">
+          <button type="button" className="btn btn-sm sidebar-refresh" onClick={handleRefresh}>
+            {pulse ? 'Refreshed' : 'Refresh data'}
+          </button>
+          <p className="sidebar-hint">
+            Auto-reloads when you return to this window, and every few seconds, so new packs /
+            library / games show up without restarting.
+          </p>
+        </div>
 
         <div className="sidebar-footer">
           Local studio for research packs → build →

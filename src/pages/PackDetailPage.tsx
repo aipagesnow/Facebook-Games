@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAPI } from '../lib/api';
+import { useAutoRefresh } from '../hooks/useAutoRefresh';
 import type { PackDetail } from '../types/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { CopyButton } from '../components/CopyButton';
@@ -22,51 +23,39 @@ export function PackDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeDoc, setActiveDoc] = useState<string>('README.md');
   const [toast, setToast] = useState<string | null>(null);
+  const docPicked = useRef(false);
+  const lastFolder = useRef<string | undefined>(undefined);
+  if (folderName !== lastFolder.current) {
+    lastFolder.current = folderName;
+    docPicked.current = false;
+  }
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      if (!folderName) return;
-      const api = getAPI();
-      const settings = await api.getSettings();
-      // list packs to resolve absolute path by folder name
-      const list = await api.listPacks();
-      const match = list.packs.find((p) => p.folderName === folderName);
-      if (!match) {
-        // try join settings path
-        const guessed = `${settings.infoPacksPath}\\${folderName}`.replace(
-          /\\+/g,
-          '\\'
-        );
-        const res = await api.getPackDetail(guessed);
-        if (cancelled) return;
-        if (res.error || !res.pack) {
-          setError(res.error || 'Pack not found');
-          setDetail(null);
-          return;
-        }
-        setDetail(res.pack);
-        setError(null);
-        return;
-      }
-      const res = await api.getPackDetail(match.absolutePath);
-      if (cancelled) return;
-      if (res.error || !res.pack) {
-        setError(res.error || 'Failed to load pack');
-        setDetail(null);
-        return;
-      }
-      setDetail(res.pack);
-      setError(null);
+  const load = useCallback(async () => {
+    if (!folderName) return;
+    const api = getAPI();
+    const settings = await api.getSettings();
+    const list = await api.listPacks();
+    const match = list.packs.find((p) => p.folderName === folderName);
+    const packPath =
+      match?.absolutePath ||
+      `${settings.infoPacksPath}\\${folderName}`.replace(/\\+/g, '\\');
+    const res = await api.getPackDetail(packPath);
+    if (res.error || !res.pack) {
+      setError(res.error || 'Pack not found');
+      setDetail(null);
+      return;
+    }
+    setDetail(res.pack);
+    setError(null);
+    if (!docPicked.current) {
       const docs = Object.keys(res.pack.files);
       const preferred = DOC_ORDER.find((d) => docs.includes(d)) || docs[0];
       if (preferred) setActiveDoc(preferred);
+      docPicked.current = true;
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
   }, [folderName]);
+
+  useAutoRefresh(load);
 
   async function openPath(path: string) {
     const res = await getAPI().openPath(path);
@@ -111,6 +100,11 @@ export function PackDetailPage() {
     .filter(Boolean)
     .join('\n');
 
+  const uploadGameId = m?.slug || m?.id || folderName || '';
+  const uploadQuery = new URLSearchParams();
+  if (uploadGameId) uploadQuery.set('game', uploadGameId);
+  if (folderName) uploadQuery.set('pack', folderName);
+
   return (
     <div>
       <div className="page-header">
@@ -126,7 +120,13 @@ export function PackDetailPage() {
         </div>
         <div className="header-actions">
           <CopyButton text={detail.absolutePath} label="Copy pack path" className="btn" />
-          <CopyButton text={grokPrompt} label="Copy Grok prompt" className="btn btn-primary" />
+          <Link
+            className="btn btn-primary"
+            to={`/upload-guide?${uploadQuery.toString()}`}
+          >
+            Open FB Upload
+          </Link>
+          <CopyButton text={grokPrompt} label="Copy Grok prompt" className="btn" />
         </div>
       </div>
 

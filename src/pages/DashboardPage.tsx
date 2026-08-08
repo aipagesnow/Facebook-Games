@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAPI } from '../lib/api';
+import { useAutoRefresh } from '../hooks/useAutoRefresh';
 import type { InfoPackSummary, PublishedGame } from '../types/api';
 import { StatusBadge } from '../components/StatusBadge';
 
@@ -9,26 +10,23 @@ export function DashboardPage() {
   const [games, setGames] = useState<PublishedGame[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
-      const api = getAPI();
-      const [packRes, libRes] = await Promise.all([api.listPacks(), api.listLibrary()]);
-      if (cancelled) return;
-      setPacks(packRes.packs);
-      setGames(libRes.games);
-      setError(packRes.error || libRes.error);
-      setLoading(false);
-    }
-    load();
-    return () => {
-      cancelled = true;
-    };
+  const load = useCallback(async () => {
+    setLoading(true);
+    const api = getAPI();
+    const [packRes, libRes] = await Promise.all([api.listPacks(), api.listLibrary()]);
+    setPacks(packRes.packs);
+    setGames(libRes.games);
+    setError(packRes.error || libRes.error);
+    setLoading(false);
+    setLastRefresh(new Date());
   }, []);
 
+  useAutoRefresh(load);
+
   const readyCount = packs.filter((p) => p.manifest?.status === 'ready').length;
+  const inProdCount = packs.filter((p) => p.manifest?.status === 'in-production').length;
   const candidateCount = packs.filter((p) => p.manifest?.status === 'candidate').length;
   const recentPacks = packs.slice(0, 4);
   const recentGames = games.slice(0, 4);
@@ -43,13 +41,21 @@ export function DashboardPage() {
             workflow, published library on the right, and everything needed for
             developers.facebook.
           </p>
+          <p className="live-dot" style={{ marginTop: 8 }}>
+            Live data
+            {lastRefresh
+              ? ` · updated ${lastRefresh.toLocaleTimeString()}`
+              : loading
+                ? ' · loading…'
+                : ''}
+          </p>
         </div>
         <div className="header-actions">
           <Link className="btn" to="/packs">
             Browse packs
           </Link>
-          <Link className="btn btn-primary" to="/settings">
-            Configure folders
+          <Link className="btn btn-primary" to="/upload-guide">
+            FB copy fields
           </Link>
         </div>
       </div>
@@ -59,17 +65,19 @@ export function DashboardPage() {
       <div className="grid grid-stats">
         <div className="card stat-card">
           <div className="stat-label">Info packs</div>
-          <div className="stat-value">{loading ? '—' : packs.length}</div>
+          <div className="stat-value">{loading && !packs.length ? '—' : packs.length}</div>
           <div className="stat-hint">Upcoming ideas from research pipeline</div>
         </div>
         <div className="card stat-card">
           <div className="stat-label">Ready to build</div>
-          <div className="stat-value">{loading ? '—' : readyCount}</div>
-          <div className="stat-hint">{candidateCount} still candidates</div>
+          <div className="stat-value">{loading && !packs.length ? '—' : readyCount}</div>
+          <div className="stat-hint">
+            {inProdCount} in production · {candidateCount} candidates
+          </div>
         </div>
         <div className="card stat-card">
           <div className="stat-label">Library</div>
-          <div className="stat-value">{loading ? '—' : games.length}</div>
+          <div className="stat-value">{loading && !games.length ? '—' : games.length}</div>
           <div className="stat-hint">Published / tracked Instant Games</div>
         </div>
         <div className="card stat-card">
@@ -138,7 +146,9 @@ export function DashboardPage() {
               <tbody>
                 {recentGames.map((g) => (
                   <tr key={g.id}>
-                    <td>{g.title}</td>
+                    <td>
+                      <Link to="/library">{g.title}</Link>
+                    </td>
                     <td>
                       <StatusBadge status={g.status} />
                     </td>
@@ -165,8 +175,8 @@ export function DashboardPage() {
             Instant Game + Facebook market assets.
           </li>
           <li style={{ marginBottom: 8 }}>
-            Use the Upload guide for developers.facebook fields, discovery assets, and
-            Zero Permissions checklist.
+            Use <Link to="/upload-guide"><strong>FB Upload</strong></Link> for one-click
+            copy of listing text, build path, and checklist.
           </li>
           <li>
             After launch, register the game in Library for ongoing live-ops tracking.

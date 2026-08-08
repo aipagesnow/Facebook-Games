@@ -52,6 +52,8 @@ export interface PublishedGame {
   workspacePath?: string;
   notes?: string;
   genre?: string;
+  /** Copy-ready fields for developers.facebook Instant Games listing. */
+  fbListing?: Record<string, unknown>;
   [key: string]: unknown;
 }
 
@@ -64,9 +66,13 @@ export interface StudioAPI {
     packPath: string
   ) => Promise<{ pack: PackDetail | null; error: string | null }>;
   listLibrary: () => Promise<{ games: PublishedGame[]; error: string | null }>;
+  /** Library + info packs + games/ folders merged for FB Upload page */
+  listUploadTargets: () => Promise<{ games: PublishedGame[]; error: string | null }>;
   saveLibraryGame: (game: Partial<PublishedGame>) => Promise<PublishedGame>;
-  openPath: (targetPath: string) => Promise<{ ok: boolean; error?: string }>;
-  showItemInFolder: (targetPath: string) => Promise<{ ok: boolean; error?: string }>;
+  openPath: (targetPath: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
+  showItemInFolder: (targetPath: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
+  /** Open Explorer with game.zip selected (Windows-reliable). */
+  openZipHelper: (zipOrFolderPath: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
   pathExists: (targetPath: string) => Promise<boolean>;
   getAppPaths: () => Promise<{ userData: string; projectRoot: string }>;
 }

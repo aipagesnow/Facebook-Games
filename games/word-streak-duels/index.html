@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1220" />
+    <title>Word Streak Duels</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Boot -->
+      <section id="screen-boot" class="screen screen-active" aria-live="polite">
+        <div class="boot-mark" aria-hidden="true">
+          <span>W</span><span>S</span><span>D</span>
+        </div>
+        <h1 class="boot-title">Word Streak Duels</h1>
+        <p id="bootStatus" class="muted">Loading…</p>
+        <div class="progress-track" aria-hidden="true">
+          <div id="bootBar" class="progress-fill"></div>
+        </div>
+      </section>
+
+      <!-- Home -->
+      <section id="screen-home" class="screen" hidden>
+        <header class="top-bar">
+          <div>
+            <p class="eyebrow">Word ladder duels</p>
+            <h1>Word Streak Duels</h1>
+          </div>
+          <div class="top-actions">
+            <button id="muteBtn" type="button" class="icon-btn" title="Mute sound" aria-label="Mute sound">
+              🔊
+            </button>
+            <div class="streak-pill" title="Daily streak">
+              <span aria-hidden="true">🔥</span>
+              <strong id="homeStreak">0</strong>
+            </div>
+          </div>
+        </header>
+
+        <div class="mode-tabs" role="tablist" aria-label="Play mode">
+          <button type="button" class="mode-tab active" data-mode="daily" id="tabDaily">
+            Daily
+          </button>
+          <button type="button" class="mode-tab" data-mode="friends" id="tabFriends">
+            Friends
+          </button>
+        </div>
+
+        <div id="challengeBanner" class="challenge-banner" hidden>
+          <p class="eyebrow">Friend challenge</p>
+          <p id="challengeText">Beat their score!</p>
+        </div>
+
+        <!-- Daily panel -->
+        <div id="panelDaily" class="mode-panel">
+          <div class="seed-card">
+            <p class="eyebrow">Today’s seed <span class="seed-note">(new every day)</span></p>
+            <div id="homeSeed" class="seed-word">CRANE</div>
+            <p id="homeTheme" class="muted theme-line">Classic chain</p>
+          </div>
+
+          <div class="stat-row stat-row-2">
+            <div class="stat-box">
+              <span class="stat-label">Best today</span>
+              <strong id="homeBest">0</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Freeze left</span>
+              <strong id="homeFreeze">0</strong>
+            </div>
+          </div>
+
+          <button id="playBtn" type="button" class="btn btn-primary btn-lg">
+            Play 60s daily round
+          </button>
+          <button id="dailyBoardBtn" type="button" class="btn btn-secondary">
+            Daily leaderboard
+          </button>
+          <p class="tip muted">
+            Everyone shares today’s seed. Score hits the daily board. Seed changes automatically at midnight (UTC day).
+          </p>
+        </div>
+
+        <!-- Friends panel -->
+        <div id="panelFriends" class="mode-panel" hidden>
+          <div class="friends-card">
+            <p class="eyebrow">Private with friends &amp; family</p>
+            <h2 class="friends-title">Friends duels</h2>
+            <p class="muted friends-copy">
+              Play the same daily ladder, rank only against Facebook friends who play, and send one-tap challenges. Perfect for private groups.
+            </p>
+            <div class="stat-row" style="margin-top: 12px">
+              <div class="stat-box">
+                <span class="stat-label">Seed</span>
+                <strong id="friendsSeed" style="font-size: 0.95rem">—</strong>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Your best</span>
+                <strong id="friendsBest">0</strong>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Streak</span>
+                <strong id="friendsStreak">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <button id="friendsPlayBtn" type="button" class="btn btn-primary btn-lg">
+            Play friends round
+          </button>
+          <button id="friendsBoardBtn" type="button" class="btn btn-secondary">
+            Friends leaderboard
+          </button>
+          <button id="friendsInviteBtn" type="button" class="btn btn-ghost">
+            Invite / challenge a friend
+          </button>
+          <p class="tip muted">
+            Friends board only shows people you’re connected with on Facebook who have scored. Invite them so your circle can compete privately.
+          </p>
+        </div>
+      </section>
+
+      <!-- Play -->
+      <section id="screen-play" class="screen" hidden>
+        <div class="play-top">
+          <span id="playModeBadge" class="mode-badge">Daily</span>
+          <button id="muteBtnPlay" type="button" class="icon-btn icon-btn-sm" title="Mute sound" aria-label="Mute sound">
+            🔊
+          </button>
+        </div>
+        <header class="hud">
+          <div class="hud-cell">
+            <span class="stat-label">Time</span>
+            <strong id="timer" class="hud-value">60</strong>
+          </div>
+          <div class="hud-cell hud-center">
+            <span class="stat-label">Need</span>
+            <strong id="needLetter" class="need-letter">E</strong>
+          </div>
+          <div class="hud-cell">
+            <span class="stat-label">Score</span>
+            <strong id="score" class="hud-value">0</strong>
+          </div>
+        </header>
+
+        <p id="playStatus" class="status-line" role="status">Build the chain…</p>
+
+        <div id="targetBar" class="target-bar" hidden>
+          Target: <strong id="targetScore">0</strong>
+          <span id="targetDelta" class="muted"></span>
+        </div>
+
+        <ul id="chain" class="chain" aria-label="Word chain"></ul>
+
+        <div class="word-display-wrap">
+          <div id="wordDisplay" class="word-display" aria-live="polite">
+            <span class="word-placeholder">Tap letters…</span>
+          </div>
+        </div>
+        <!-- Hidden real input kept for accessibility / paste; native mobile keyboard suppressed -->
+        <input
+          id="wordInput"
+          type="text"
+          inputmode="none"
+          readonly
+          autocomplete="off"
+          autocapitalize="characters"
+          autocorrect="off"
+          spellcheck="false"
+          maxlength="16"
+          class="sr-only-input"
+          aria-label="Word input"
+          tabindex="-1"
+        />
+
+        <div id="gameKeyboard" class="game-keyboard" aria-label="Word keyboard">
+          <div class="kb-row" data-row="0"></div>
+          <div class="kb-row" data-row="1"></div>
+          <div class="kb-row" data-row="2"></div>
+        </div>
+
+        <button id="submitBtn" type="button" class="btn btn-primary btn-lg btn-go">
+          GO
+        </button>
+
+        <div class="play-actions play-actions-single">
+          <button id="quitBtn" type="button" class="btn btn-ghost">End round</button>
+        </div>
+      </section>
+
+      <!-- End -->
+      <section id="screen-end" class="screen" hidden>
+        <p class="eyebrow">Round complete</p>
+        <h2 id="endHeadline">Nice chain!</h2>
+        <div class="end-score">
+          <span class="stat-label">Score</span>
+          <strong id="finalScore">0</strong>
+        </div>
+        <div class="stat-row end-stats">
+          <div class="stat-box">
+            <span class="stat-label">Words</span>
+            <strong id="finalWords">0</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Longest</span>
+            <strong id="finalLongest">—</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Streak</span>
+            <strong id="finalStreak">0</strong>
+          </div>
+        </div>
+        <p id="endStatus" class="status-line muted"></p>
+        <p id="boardStatus" class="status-line muted"></p>
+
+        <button id="shareBtn" type="button" class="btn btn-primary btn-lg">
+          Challenge a friend
+        </button>
+        <button id="endBoardBtn" type="button" class="btn btn-secondary">
+          View leaderboard
+        </button>
+        <button id="freezeBtn" type="button" class="btn btn-secondary">
+          Protect streak (watch ad)
+        </button>
+        <button id="replayBtn" type="button" class="btn btn-ghost">Play again</button>
+        <button id="homeBtn" type="button" class="btn btn-ghost">Home</button>
+      </section>
+
+      <!-- Leaderboard overlay -->
+      <section id="screen-board" class="screen overlay-screen" hidden>
+        <header class="top-bar">
+          <div>
+            <p class="eyebrow" id="boardEyebrow">Leaderboard</p>
+            <h1 id="boardTitle">Daily ranks</h1>
+          </div>
+          <button id="boardCloseBtn" type="button" class="icon-btn" aria-label="Close">✕</button>
+        </header>
+        <p id="boardSubtitle" class="muted board-sub"></p>
+        <ol id="boardList" class="board-list"></ol>
+        <p id="boardEmpty" class="tip muted" hidden>
+          No scores yet — play a round to claim the top spot.
+        </p>
+        <button id="boardPlayBtn" type="button" class="btn btn-primary btn-lg">Play this ladder</button>
+      </section>
+    </div>
+
+    <script src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+    <script src="audio.js"></script>
+    <script src="words.js"></script>
+    <script src="names.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>

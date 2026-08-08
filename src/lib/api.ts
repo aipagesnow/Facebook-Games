@@ -26,6 +26,10 @@ function createWebFallback(): StudioAPI {
       error: 'Pack detail requires Electron.',
     }),
     listLibrary: async () => ({ games: [], error: null }),
+    listUploadTargets: async () => ({
+      games: [],
+      error: 'Running in browser preview. Use Electron to load packs + library for FB Upload.',
+    }),
     saveLibraryGame: async (game) => ({
       id: game.id || 'demo',
       title: game.title || 'Demo Game',
@@ -33,6 +37,10 @@ function createWebFallback(): StudioAPI {
     }),
     openPath: async () => ({ ok: false, error: 'Requires Electron' }),
     showItemInFolder: async () => ({ ok: false, error: 'Requires Electron' }),
+    openZipHelper: async () => ({
+      ok: false,
+      error: 'Requires Electron app (not browser preview)',
+    }),
     pathExists: async () => false,
     getAppPaths: async () => ({ userData: '', projectRoot: '' }),
   };

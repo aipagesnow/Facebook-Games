@@ -1,0 +1,71 @@
+{
+  "title": "Word Streak Duels",
+  "slug": "word-streak-duels",
+  "shortDescription": "60-second word duels with friends. Chain words from a daily seed, protect your streak, and challenge friends.",
+  "longDescription": "Race a 60-second word ladder from a shared seed. Each word must start with the last letter of the previous word. Beat friends asynchronously, protect a daily streak, and share your longest chain.\n\nâ€¢ Daily ladder seeds and themed weeks\nâ€¢ One-tap friend challenges\nâ€¢ Streaks with optional freeze\nâ€¢ Hints when you need a nudge\nâ€¢ Instant play â€” no login wall (Zero Permissions ready)",
+  "storeHook": "60-second word duels with friends",
+  "category": "Word / Puzzle",
+  "orientation": "PORTRAIT",
+  "tags": [
+    "word",
+    "puzzle",
+    "daily",
+    "challenge",
+    "streak",
+    "friends"
+  ],
+  "featureBullets": [
+    "Daily word ladder in 60 seconds",
+    "Challenge friends with your seed and score",
+    "Streaks and optional streak freeze",
+    "Hints without interrupting typing",
+    "Zero Permissions â€” play instantly"
+  ],
+  "privacyPolicyUrl": "",
+  "buildFolder": "C:\\Users\\chris\\OneDrive\\Desktop\\Facebook-Games\\games\\word-streak-duels",
+  "entryFile": "index.html",
+  "configFile": "fbapp-config.json",
+  "zeroPermissions": true,
+  "sdkNotes": "FBInstant.initializeAsync â†’ setLoadingProgress â†’ startGameAsync. shareAsync for challenges. Mock SDK for local preview.",
+  "iconBrief": "1024Ã—1024 â€” large letter tiles W Â· S Â· D, high contrast, flat lighting, no tiny text. Readable at 48â€“64px.",
+  "coverBrief": "1600Ã—300 â€” left: letter chain, center: Word Streak Duels wordmark, right: two simple avatars + VS badge. Sell friends + words + speed.",
+  "shareImageIdea": "I chained 12 words from CRANE â€” beat me (streak badge + seed of the day)",
+  "videoBrief": "â‰¤15s: 0â€“2s finger typing first word; 2â€“4s score pop + Challenge button.",
+  "checklist": [
+    "Create Instant Games product on developers.facebook.com",
+    "Upload web host / zip of build folder (entry: index.html)",
+    "Include fbapp-config.json (PORTRAIT)",
+    "App icon 1024Ã—1024",
+    "Cover image 1600Ã—300",
+    "Category: Word / Puzzle",
+    "Description + short description from this listing",
+    "Privacy policy URL",
+    "Zero Permissions / SDK v8+ readiness",
+    "Test share / challenge path in embedded player",
+    "Register App ID back in Games Studio Library"
+  ],
+  "useCaseOverrides": [
+    {
+      "name": "Launch an Instant Game on Facebook and Messenger",
+      "pick": "required",
+      "why": "Only use case to select at create time. Meta greys out Audience Network when this is checked â€” expected."
+    },
+    {
+      "name": "Advertise on your app with Meta Audience Network",
+      "pick": "skip",
+      "why": "Incompatible at create time with Instant Game. Add monetization later in Instant Games / Audience Network settings on the app dashboard."
+    },
+    {
+      "name": "Create & manage app ads with Meta Ads Manager",
+      "pick": "skip",
+      "why": "Wrong product (app install ads). Not for Instant Games host."
+    },
+    {
+      "name": "Authenticate and request data from users with Facebook Login",
+      "pick": "skip",
+      "why": "Zero Permissions Instant Game â€” no classic Login."
+    }
+  ],
+  "uploadZipPath": "C:\\\\Users\\\\chris\\\\OneDrive\\\\Desktop\\\\Facebook-Games\\\\games\\\\game.zip",
+  "versionComment": "v1.6 louder music, custom word keyboard, UI polish, core-word guarantee (star etc)."
+}

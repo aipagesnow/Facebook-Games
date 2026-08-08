@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAPI } from '../lib/api';
+import { useAutoRefresh } from '../hooks/useAutoRefresh';
 import type { InfoPackSummary } from '../types/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { CopyButton } from '../components/CopyButton';
@@ -10,18 +11,18 @@ export function PacksPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     setLoading(true);
     const res = await getAPI().listPacks();
     setPacks(res.packs);
     setError(res.error);
     setLoading(false);
-  }
-
-  useEffect(() => {
-    refresh();
+    setLastRefresh(new Date());
   }, []);
+
+  useAutoRefresh(refresh);
 
   async function openFolder(path: string) {
     const res = await getAPI().openPath(path);
@@ -40,10 +41,14 @@ export function PacksPage() {
             Upcoming titles from your research pipeline. Open a pack, copy its path, and
             hand it to Grok to generate the Instant Game and Facebook market package.
           </p>
+          <p className="live-dot" style={{ marginTop: 8 }}>
+            Live scan
+            {lastRefresh ? ` · ${lastRefresh.toLocaleTimeString()}` : ''}
+          </p>
         </div>
         <div className="header-actions">
-          <button type="button" className="btn" onClick={refresh} disabled={loading}>
-            {loading ? 'Scanning…' : 'Refresh'}
+          <button type="button" className="btn" onClick={() => void refresh()} disabled={loading}>
+            {loading ? 'Scanning…' : 'Refresh now'}
           </button>
         </div>
       </div>

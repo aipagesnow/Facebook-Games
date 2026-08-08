@@ -2,7 +2,7 @@
   "id": "sample-word-streak",
   "title": "Word Streak Duels",
   "slug": "word-streak-duels",
-  "status": "ready",
+  "status": "in-production",
   "genre": "word",
   "oneLiner": "Daily word ladders vs friends — beat their streak, share your best chain, back tomorrow for the next ladder.",
   "inspiredBy": ["Words With Friends-style social word play", "AHA / WOW-style instant trivia onboarding"],
