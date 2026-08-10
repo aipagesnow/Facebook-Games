@@ -2,8 +2,8 @@
 
 **Last updated:** 2026-08-10 (business verification fill-out)  
 **Status:** Game soft-shipped on Production; Details media largely done; **Business verification in progress** (Security Centre eligible) → then App Review → Publish (Live).  
-**Repo:** https://github.com/aipagesnow/Facebook-Games  
-**Local:** `C:\Users\chris\OneDrive\Desktop\Facebook-Games`
+**Repo:** (local git remote `origin`)  
+**Local:** project root folder (not published)
 
 ---
 
@@ -27,8 +27,8 @@
 | Desktop launch pack | `Desktop\WSD-Launch-Assets\` |
 | Upload zip | `games/game.zip` + Desktop `game.zip` |
 | FB listing copy | `games/word-streak-duels/fb-listing.json` + Studio **FB Upload** |
-| Studio website (GitHub Pages) | `docs/index.html` → `https://aipagesnow.github.io/Facebook-Games/` |
-| Privacy HTML | `docs/privacy-word-streak-duels.html` → `…/privacy-word-streak-duels.html` |
+| Studio website (GitHub Pages) | **LIVE** `https://aipagesnow.github.io/Facebook-Games/` (repo public, `/docs` on main) |
+| Privacy HTML | **LIVE** `https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html` |
 | Launch walkthrough | `docs/LAUNCH-WALKTHROUGH.md` |
 | App ID | `1593839865675820` |
 | Rewarded placement | `1593839865675820_1595058932220580` |
@@ -121,7 +121,7 @@
 After this handoff commit + push:
 
 - Branch: `main`  
-- Remote: `origin` → https://github.com/aipagesnow/Facebook-Games.git  
+- Remote: `origin`  
 - Includes: game source, store-assets, studio FB Upload media UI, docs (handoff, launch walkthrough, privacy HTML), pack one-liner updates, `games/game.zip`  
 
 Still local-only (gitignored):

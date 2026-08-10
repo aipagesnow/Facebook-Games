@@ -8,10 +8,6 @@ Local desktop app for building and shipping **Facebook Instant Games**.
 - **FB Upload** — Instant Games technical + discovery checklist  
 - **Settings** — point at your info-pack, library, and workspace folders  
 
-Repo: [github.com/aipagesnow/Facebook-Games](https://github.com/aipagesnow/Facebook-Games)
-
-Local folder: `C:\Users\chris\OneDrive\Desktop\Facebook-Games`
-
 ---
 
 ## Quick start (double-click)
@@ -33,7 +29,7 @@ First launch may take a minute (install + build). After that it opens quickly.
 ### Dev mode (hot reload while editing the studio)
 
 ```bash
-cd C:\Users\chris\OneDrive\Desktop\Facebook-Games
+cd path/to/Facebook-Games
 npm install
 npm run dev
 ```

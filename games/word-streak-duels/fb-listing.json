@@ -26,8 +26,8 @@
     "Instant play — Zero Permissions"
   ],
   "privacyPolicyUrl": "https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html",
-  "privacyPolicyFile": "C:\\Users\\chris\\OneDrive\\Desktop\\Facebook-Games\\games\\word-streak-duels\\store-assets\\privacy-word-streak-duels.html",
-  "buildFolder": "C:\\Users\\chris\\OneDrive\\Desktop\\Facebook-Games\\games\\word-streak-duels",
+  "privacyPolicyFile": "games/word-streak-duels/store-assets/privacy-word-streak-duels.html",
+  "buildFolder": "games/word-streak-duels",
   "entryFile": "index.html",
   "configFile": "fbapp-config.json",
   "zeroPermissions": true,
@@ -76,6 +76,6 @@
       "why": "Zero Permissions Instant Game — no classic Login."
     }
   ],
-  "uploadZipPath": "C:\\\\Users\\\\chris\\\\OneDrive\\\\Desktop\\\\Facebook-Games\\\\games\\\\game.zip",
+  "uploadZipPath": "games/game.zip",
   "versionComment": "v1.21 solo launch: personal bests, share score, streak freezes + rewarded ad placement 1593839865675820_1595058932220580, long-word bonuses, play-only music."
 }

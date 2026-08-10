@@ -105,7 +105,7 @@ We ship a small real-looking studio site under `docs/`:
 
 #### Enable GitHub Pages (one-time)
 
-1. Push latest `docs/` to `main` on https://github.com/aipagesnow/Facebook-Games  
+1. Push latest `docs/` to `main`  
 2. GitHub → **Settings → Pages**  
 3. **Build and deployment → Source:** Deploy from a branch  
 4. **Branch:** `main` · **Folder:** `/docs` · **Save**  
@@ -208,8 +208,8 @@ Publisher (every game): Apex Arcade Studio
 App:                    Word Streak Duels
 App ID:                 1593839865675820
 Privacy file:           docs/privacy-word-streak-duels.html
-Planned privacy URL:    https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html
-Repo:                   https://github.com/aipagesnow/Facebook-Games
+Studio website:         https://aipagesnow.github.io/Facebook-Games/
+Privacy URL:            https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html
 ```
 
 ---
