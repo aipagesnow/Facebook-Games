@@ -1,22 +1,24 @@
 # Session handoff — Facebook Games Studio + Word Streak Duels
 
-**Last updated:** 2026-08-10 (business verification fill-out)  
-**Status:** Game soft-shipped on Production; Details media largely done; **Business verification in progress** (Security Centre eligible) → then App Review → Publish (Live).  
-**Repo:** (local git remote `origin`)  
-**Local:** project root folder (not published)
+**Last updated:** 2026-08-11 (break — BV submitted, waiting on Meta)  
+**Status:** Game soft-shipped on Production; studio site + privacy **LIVE**; **Business verification SUBMITTED** (~2 working days). Next: wait for Verified → App Review → Publish (Live).  
+**Local project:** Desktop `Facebook-Games` folder  
+**Remote:** `origin` / `main` (repo is **public** so free GitHub Pages works)
 
 ---
 
-## Resume checklist (now)
+## Resume checklist (when you’re back)
 
-1. Open project folder (or `git pull` on `main`).  
-2. **Meta first:** [Security Centre](https://business.facebook.com/settings/security) → Apex Arcade Studio → **Start verification**.  
-   Full fill-out guide: `docs/BUSINESS-VERIFICATION.md`  
-3. Use case dropdown: **App requires access to permissions on Meta for Developers**.  
-4. When Business Verification approved → **App Review** → **Publish** (app still shows **Unpublished**).  
-5. Confirm privacy policy URL is hosted and pasted in Details if Meta requires it.  
-6. Final public test: https://www.facebook.com/gaming/play/1593839865675820/  
-7. Ads: streak freeze may still no-fill; retest on **Facebook mobile app** after verification/placement matures.
+1. Open project folder; optional `git pull` on `main`.  
+2. Check Meta: [Security Centre](https://business.facebook.com/settings/security) → **Apex Arcade Studio** → Business verification status.  
+3. **If Verified:**
+   - [developers.facebook.com](https://developers.facebook.com) → **Word Streak Duels**  
+   - Finish any **App Review** items  
+   - **Publish** (app still **Unpublished** until then)  
+   - Confirm privacy URL in Instant Games **Details**  
+   - Friend test: https://www.facebook.com/gaming/play/1593839865675820/  
+4. **If Rejected:** read Meta’s reason → fix docs/details → resubmit (see `docs/BUSINESS-VERIFICATION.md`). Screenshot + continue with Grok.  
+5. Ads: streak freeze may still no-fill; retest on **Facebook mobile app** after Live/placement matures.
 
 ### Quick paths
 
@@ -24,72 +26,81 @@
 |------|----------------|
 | Game source | `games/word-streak-duels/` |
 | Store assets | `games/word-streak-duels/store-assets/` |
-| Desktop launch pack | `Desktop\WSD-Launch-Assets\` |
-| Upload zip | `games/game.zip` + Desktop `game.zip` |
+| Upload zip | `games/game.zip` |
 | FB listing copy | `games/word-streak-duels/fb-listing.json` + Studio **FB Upload** |
-| Studio website (GitHub Pages) | **LIVE** `https://aipagesnow.github.io/Facebook-Games/` (repo public, `/docs` on main) |
-| Privacy HTML | **LIVE** `https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html` |
+| BV guide | `docs/BUSINESS-VERIFICATION.md` |
 | Launch walkthrough | `docs/LAUNCH-WALKTHROUGH.md` |
+| Studio website | **LIVE** https://aipagesnow.github.io/Facebook-Games/ |
+| Privacy policy URL | **LIVE** https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html |
 | App ID | `1593839865675820` |
 | Rewarded placement | `1593839865675820_1595058932220580` |
-| Business | **Apex Arcade Studio** (ID `1711577450147604`) |
+| Business portfolio | **Apex Arcade Studio** (ID `1711577450147604`) |
 | Monetization property | **Word Streak Duels** |
 | Publisher (every game) | **Apex Arcade Studio** |
 | Category | **Trivia and Word** |
 | Tagline (≤40 chars) | `60s daily word ladder — beat your best!` |
 | Connection | **Zero permissions** (leave as-is) |
+| GitHub Pages | Branch `main` · folder `/docs` · repo **public** |
 
-**Note:** `data/library/*.json` is **gitignored**. Local Library entry has App ID + fbListing; if missing after clone, re-add in Library UI and paste from `fb-listing.json`.
+**Note:** `data/library/*.json` is **gitignored**. If Library empty after clone, re-add in Library UI from `fb-listing.json`.
 
 ---
 
-## Where we stopped (2026-08-10)
+## Where we stopped (2026-08-11 break)
 
-### Done today (locked in)
+### Business verification (SUBMITTED — waiting)
 
-#### Word Streak Duels (v1.21 game)
+| Choice / field | What we used |
+|----------------|--------------|
+| Use case | App requires access to permissions on Meta for Developers |
+| Business type | **Sole proprietorship** |
+| Officially registered? | **Not yet registered** |
+| Legal business name | User’s **real personal name** (not inventing a company) |
+| Alternative / trade name | **Apex Arcade Studio** |
+| Tax / registration ID | Left blank (optional, no formal registration) |
+| Website on form | GitHub Pages studio URL (see note below on email) |
+| Name proof | **Business bank statement** type ← personal bank statement photo OK; redact sort code + account number |
+| Address proof | Same bank statement OK **if** address visible; else utility bill |
+| Submission result | **Information submitted** — Meta said ~**two working days** |
+| User action | Clicked Done; taking a break until Meta emails / status updates |
 
-- Solo home only (no Daily/Challenge tabs).  
-- Personal bests card (no fake #1 leaderboard).  
-- Share score / play link; clearer status lines (share/ad on secondary line only).  
-- Streak freezes explained; rewarded ad wired to placement ID.  
-- Play-only music; names week removed + name blocklist; long-word bonuses + SFX.  
-- Fixed Meta board names + context handling + local score store (shared cloud ranks deferred).  
-- Production soft ship tested desktop + mobile (ads not filling yet — expected).
+**Email gotcha (resolved for this submit):** Meta locked email domain to `@github.io` when website was github.io. User got past it and submitted successfully. If resubmit ever needed and email is stuck again: go Back, use **phone/SMS** if offered, or use a website domain that has a real mailbox (e.g. custom domain / aivora.digital) — **do not rely on `@github.io` inbox**.
 
-#### Meta setup progress
+**Do not** start a second verification while this one is pending.
+
+### Public studio site (done this session)
+
+| Item | Detail |
+|------|--------|
+| Home | `docs/index.html` → https://aipagesnow.github.io/Facebook-Games/ |
+| Privacy | `docs/privacy-word-streak-duels.html` (user verified screenshot looks good) |
+| Footer | Privacy only — **no Source / GitHub link** |
+| Paths scrubbed | No `C:\Users\chris\...` in public docs / `fb-listing.json` |
+| Repo visibility | Made **public** (required for free GitHub Pages) |
+| App ID + play link on site | OK to stay public |
+| Privacy URL for Meta Details | Paste if not already: privacy URL above |
+
+### Already done earlier (still true)
 
 | Step | Status |
 |------|--------|
-| Instant Game Details text | Done (tagline, publisher, category, descriptions) |
+| Instant Game Details text | Done |
 | Required Game Media | Done (icons, cover, banner, landscape preview video) |
-| Portrait/square preview video | Skipped (later) |
-| App Page | Skipped (optional later) |
 | Zero permissions | Selected |
-| Web hosting Production | Soft-shipped |
-| Business Verification | **Eligible — use `docs/BUSINESS-VERIFICATION.md`** |
-| App Review | Pending after BV |
+| Web hosting Production | Soft-shipped (v1.21) |
+| Business Verification | **SUBMITTED — awaiting Meta (~2 working days)** |
+| App Review | Pending after BV approved |
 | Publish / Live | **Unpublished** until checklist complete |
-| Ads | Placement created; fill often missing (mobile better than desktop) |
-
-#### Facebook Games Studio improvements
-
-- **FB Upload** expanded into numbered sections: hosting, use cases, Game Details, **Game Media** (required/optional slots with paths + explanations + file ready/missing), privacy, Live checklist, monetization.  
-- `src/lib/fbMedia.ts` — Meta media slot definitions for reuse on every game.  
-- `src/lib/fbListing.ts` — `publisher`, `DEFAULT_PUBLISHER`, Tagline (not “Store hook”), `TAGLINE_MAX_CHARS` (40), rewarded placement field, connection experience.  
-- Version comment prefers `games/<slug>/fb-listing.json`.  
-- electron main merge for versionComment from on-disk listing.
+| Ads | Placement exists; fill often missing |
 
 ### Not done / later
 
-- [ ] Business verification complete  
+- [ ] Business verification **approved** (waiting on Meta)  
 - [ ] App Review + Publish (Live)  
-- [ ] Public privacy URL live (file ready; host e.g. GitHub Pages)  
-- [ ] Real ad fill reliable  
-- [ ] Shared multiplayer leaderboards (Meta context limits; own server option later)  
-- [ ] Optional media: portrait/square videos, splash polish  
-- [ ] Optional Facebook App Page for the game  
-- [ ] Better gameplay preview video (screen record) if desired  
+- [ ] Friend test without tester role  
+- [ ] Real ad fill reliable on mobile  
+- [ ] Shared multiplayer leaderboards (deferred)  
+- [ ] Optional media / App Page / better preview video  
 
 ---
 
@@ -103,6 +114,8 @@
 6. **App Page:** optional later.  
 7. **Zero permissions:** keep.  
 8. **One Business** for all games; **one Monetization property per game**.  
+9. **Indie path:** sole prop / not registered / legal name = person; brand = Apex Arcade Studio.  
+10. **Public site:** GitHub Pages only; no Source link; no local Windows paths in published files.
 
 ---
 
@@ -118,11 +131,11 @@
 
 ## Git / save status
 
-After this handoff commit + push:
+Expected after this handoff commit + push:
 
 - Branch: `main`  
 - Remote: `origin`  
-- Includes: game source, store-assets, studio FB Upload media UI, docs (handoff, launch walkthrough, privacy HTML), pack one-liner updates, `games/game.zip`  
+- Includes: studio Pages site, privacy HTML, BV guide, scrubbed paths, this handoff  
 
 Still local-only (gitignored):
 
@@ -131,12 +144,12 @@ Still local-only (gitignored):
 
 ---
 
-## Suggested order (ship)
+## Suggested order when Meta replies
 
-1. **Business verification** for Apex Arcade Studio — follow `docs/BUSINESS-VERIFICATION.md`.  
-2. Host privacy HTML (GitHub Pages) → paste URL in Details if required.  
+1. Confirm **Verified** in Security Centre (or fix rejection).  
+2. Privacy URL in Instant Games Details (if missing).  
 3. App Review items Meta shows.  
-4. Publish app (Live).  
-5. Friend test without tester role.  
+4. **Publish** app (Live).  
+5. Friend test play link.  
 6. Optional: retest freeze ads on mobile.  
-7. Optional: next Instant Game using improved studio.  
+7. Optional: next Instant Game using studio.  

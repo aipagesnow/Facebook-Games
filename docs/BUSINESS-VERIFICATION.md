@@ -3,7 +3,9 @@
 **Business portfolio:** Apex Arcade Studio  
 **Business ID:** `1711577450147604`  
 **Why:** Unlocks App Review → Publish (Live) for Instant Games (Word Streak Duels first).  
-**Screen you have:** Security Centre → **Eligible for verification** → **Start verification** → intro modal **Get started**
+**Status (2026-08-11):** **Submitted** to Meta — “Thanks for submitting your info”, ~**two working days**. Waiting on review. Do not open a second verification while pending.
+
+**Screen path:** Security Centre → Start verification → Get started → wizard → submit → Done.
 
 > Meta runs this wizard in *your* browser. This doc tells you exactly what to pick and type.  
 > **Never invent legal details.** Every field must match real documents (personal is fine for sole / indie).
