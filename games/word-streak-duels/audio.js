@@ -1,6 +1,6 @@
 /**
- * Word Streak Duels — menu vs play music + SFX (Web Audio)
- * Menu: calm ambient pad
+ * Word Streak Duels — play-only music + SFX (Web Audio)
+ * Music runs only during active gameplay; menu / end / boards are silent.
  * Play: brighter, faster melodic loop
  */
 (function (global) {
@@ -85,7 +85,7 @@
     }
     persist();
     if (muted) stopMusic();
-    else if (unlocked && musicMode) startMusic(musicMode);
+    else if (unlocked && musicMode === 'play') startMusic('play');
     return muted;
   }
 
@@ -129,6 +129,33 @@
       tone(523.25, 0.08, 'triangle', 0.22, t);
       tone(659.25, 0.1, 'triangle', 0.2, t + 0.05);
       tone(783.99, 0.14, 'sine', 0.18, t + 0.1);
+    },
+    /** Long-word boost — brighter cascade than ok, short & celebratory */
+    bonus() {
+      const c = ensure();
+      if (!c || muted) return;
+      const t = c.currentTime;
+      // soft low punch
+      tone(196.0, 0.14, 'triangle', 0.14, t);
+      // rising sparkle arpeggio (C–E–G–C–E)
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
+        tone(f, 0.11 + i * 0.012, i % 2 ? 'triangle' : 'sine', 0.2 - i * 0.015, t + 0.04 + i * 0.055);
+      });
+      // bright shimmer tail
+      tone(1568.0, 0.2, 'sine', 0.11, t + 0.32);
+      tone(2093.0, 0.16, 'triangle', 0.07, t + 0.38);
+    },
+    /** Extra-juicy for 9+ letter bonuses */
+    bonusBig() {
+      const c = ensure();
+      if (!c || muted) return;
+      const t = c.currentTime;
+      tone(146.83, 0.16, 'triangle', 0.16, t);
+      [392.0, 523.25, 659.25, 783.99, 987.77, 1174.7, 1396.9].forEach((f, i) => {
+        tone(f, 0.12, i < 3 ? 'triangle' : 'sine', 0.18 - i * 0.01, t + i * 0.048);
+      });
+      tone(1760.0, 0.22, 'sine', 0.12, t + 0.36);
+      tone(2093.0, 0.2, 'triangle', 0.09, t + 0.44);
     },
     bad() {
       const c = ensure();
@@ -292,39 +319,45 @@
   }
 
   function startMusic(mode) {
-    const next = mode === 'play' ? 'play' : 'menu';
+    // Only gameplay has BGM — anything else stops music
+    if (mode !== 'play') {
+      musicMode = null;
+      stopMusicTimer();
+      return;
+    }
     if (muted) {
-      musicMode = next;
+      musicMode = 'play';
       return;
     }
     ensure();
-    if (musicMode === next && musicTimer) return;
+    if (musicMode === 'play' && musicTimer) return;
 
     stopMusicTimer();
-    musicMode = next;
+    musicMode = 'play';
     musicStep = 0;
-
-    // Quick fade-ish restart via step volume already decaying
-    if (next === 'play') {
-      playPlayStep();
-      musicTimer = global.setInterval(playPlayStep, 380);
-    } else {
-      playMenuStep();
-      musicTimer = global.setInterval(playMenuStep, 1400);
-    }
+    playPlayStep();
+    musicTimer = global.setInterval(playPlayStep, 380);
   }
 
   function stopMusic() {
+    musicMode = null;
     stopMusicTimer();
   }
 
-  /** @param {'menu' | 'play'} mode */
+  /**
+   * @param {'play' | 'menu' | 'off' | null} mode
+   * Only 'play' starts music; menu/off/null silence BGM.
+   */
   function setMusicMode(mode) {
-    if (!unlocked && !muted) {
-      musicMode = mode === 'play' ? 'play' : 'menu';
+    if (mode !== 'play') {
+      stopMusic();
       return;
     }
-    startMusic(mode);
+    if (!unlocked && !muted) {
+      musicMode = 'play';
+      return;
+    }
+    startMusic('play');
   }
 
   global.WSDAudio = {

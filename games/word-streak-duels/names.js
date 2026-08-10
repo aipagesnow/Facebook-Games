@@ -1,6 +1,8 @@
 /**
- * First names allowed as ladder words + seed material.
- * Lowercase for dictionary merge. Common English given names (3–12 letters).
+ * People given-name blocklist (not playable as ladder words).
+ * Used at boot to strip names from the dictionary. Countries / well-known
+ * places and dual-use English words are re-kept in game.js ensureCoreWords.
+ * Lowercase, 3–12 letters.
  */
 window.WSD_NAMES = [
   'aaron','abby','abdul','abel','abigail','abraham','adam','adrian','adriana','adrienne',

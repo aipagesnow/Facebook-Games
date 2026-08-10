@@ -1,147 +1,140 @@
 # Session handoff — Facebook Games Studio + Word Streak Duels
 
-**Last updated:** 2026-08-08 (break / lock-in)  
-**Status:** Studio improved + first Instant Game playable on Facebook (tester). Local + GitHub should match after this handoff push.  
+**Last updated:** 2026-08-10 (break / lock-in after launch prep)  
+**Status:** Game soft-shipped on Production; Details media largely done; **Business verification** next, then App Review → Publish (Live).  
 **Repo:** https://github.com/aipagesnow/Facebook-Games  
 **Local:** `C:\Users\chris\OneDrive\Desktop\Facebook-Games`
 
 ---
 
-## Resume checklist (next session)
+## Resume checklist (tomorrow)
 
-1. Open project folder above (or pull `main` from GitHub).  
-2. Launch studio: double-click `Launch Facebook Games Studio.bat` or Desktop shortcut.  
-3. Game source: `games/word-streak-duels/`  
-4. Upload zip: `games/game.zip` (also Desktop `game.zip` after rebuild)  
-5. Facebook app: **Word Streak Duels** — App ID **`1593839865675820`**  
-6. Meta: Web hosting → latest zip → **Push to Production** if code changed since last upload.  
-7. Play: `https://www.facebook.com/gaming/play/1593839865675820/`  
-8. Testers: **App roles → Roles → Testers** (not “Test users”). They accept at https://developers.facebook.com/requests/ then use the short play link. No developer account required for testers.
+1. Open project folder (or `git pull` on `main`).  
+2. Launch studio: `Launch Facebook Games Studio.bat` or Desktop shortcut.  
+3. **Meta first:** [developers.facebook.com](https://developers.facebook.com) → Word Streak Duels → **Review → Verification** → **Start verification** for **Apex Arcade Studio**.  
+4. When Business Verification approved → **App Review** → **Publish** (app still shows **Unpublished**).  
+5. Confirm privacy policy URL is hosted and pasted in Details if Meta requires it.  
+6. Final public test: https://www.facebook.com/gaming/play/1593839865675820/  
+7. Ads: streak freeze may still no-fill; retest on **Facebook mobile app** after verification/placement matures.
+
+### Quick paths
+
+| Item | Path / value |
+|------|----------------|
+| Game source | `games/word-streak-duels/` |
+| Store assets | `games/word-streak-duels/store-assets/` |
+| Desktop launch pack | `Desktop\WSD-Launch-Assets\` |
+| Upload zip | `games/game.zip` + Desktop `game.zip` |
+| FB listing copy | `games/word-streak-duels/fb-listing.json` + Studio **FB Upload** |
+| Privacy HTML | `docs/privacy-word-streak-duels.html` + store-assets copy |
+| Launch walkthrough | `docs/LAUNCH-WALKTHROUGH.md` |
+| App ID | `1593839865675820` |
+| Rewarded placement | `1593839865675820_1595058932220580` |
+| Business | **Apex Arcade Studio** (ID `1711577450147604`) |
+| Monetization property | **Word Streak Duels** |
+| Publisher (every game) | **Apex Arcade Studio** |
+| Category | **Trivia and Word** |
+| Tagline (≤40 chars) | `60s daily word ladder — beat your best!` |
+| Connection | **Zero permissions** (leave as-is) |
+
+**Note:** `data/library/*.json` is **gitignored**. Local Library entry has App ID + fbListing; if missing after clone, re-add in Library UI and paste from `fb-listing.json`.
 
 ---
 
-## Where we are
+## Where we stopped (2026-08-10)
 
-### Facebook Games Studio (Electron app)
+### Done today (locked in)
 
-Working local studio for Instant Games workflow:
+#### Word Streak Duels (v1.21 game)
 
-| Area | Status |
+- Solo home only (no Daily/Challenge tabs).  
+- Personal bests card (no fake #1 leaderboard).  
+- Share score / play link; clearer status lines (share/ad on secondary line only).  
+- Streak freezes explained; rewarded ad wired to placement ID.  
+- Play-only music; names week removed + name blocklist; long-word bonuses + SFX.  
+- Fixed Meta board names + context handling + local score store (shared cloud ranks deferred).  
+- Production soft ship tested desktop + mobile (ads not filling yet — expected).
+
+#### Meta setup progress
+
+| Step | Status |
 |------|--------|
-| Dashboard / Packs / Library / Settings | Working |
-| **Auto-refresh** (focus + ~12s poll + sidebar Refresh) | Working |
-| **FB Upload** page | Library + packs + `games/` merged via `upload:listTargets` |
-| Pack detail → **Open FB Upload** | Deep-link `?game=` / `?pack=` |
-| Library **Edit details (App ID)** | Working |
-| Copy fields + **Copy ALL FB fields** | Working |
-| Meta **use-case guide** (Instant Game only at create) | Working |
-| **Open folder with game.zip** (Explorer `/select`) | Working |
-| Version comment + zip path copy | Working |
+| Instant Game Details text | Done (tagline, publisher, category, descriptions) |
+| Required Game Media | Done (icons, cover, banner, landscape preview video) |
+| Portrait/square preview video | Skipped (later) |
+| App Page | Skipped (optional later) |
+| Zero permissions | Selected |
+| Web hosting Production | Soft-shipped |
+| Business Verification | **Unverified — START TOMORROW** |
+| App Review | Pending after BV |
+| Publish / Live | **Unpublished** until checklist complete |
+| Ads | Placement created; fill often missing (mobile better than desktop) |
 
-**Stack:** Electron + React + Vite + TypeScript.
+#### Facebook Games Studio improvements
 
-### Word Streak Duels (first game)
+- **FB Upload** expanded into numbered sections: hosting, use cases, Game Details, **Game Media** (required/optional slots with paths + explanations + file ready/missing), privacy, Live checklist, monetization.  
+- `src/lib/fbMedia.ts` — Meta media slot definitions for reuse on every game.  
+- `src/lib/fbListing.ts` — `publisher`, `DEFAULT_PUBLISHER`, Tagline (not “Store hook”), `TAGLINE_MAX_CHARS` (40), rewarded placement field, connection experience.  
+- Version comment prefers `games/<slug>/fb-listing.json`.  
+- electron main merge for versionComment from on-disk listing.
 
-Built from `info-packs/sample-word-streak/` → `games/word-streak-duels/`.
+### Not done / later
 
-| Feature | Notes |
-|---------|--------|
-| Core loop | 60s word ladder; need gold last-letter |
-| Dictionary | ~315k words (`words.js`) + core guarantees |
-| **Names** | `names.js` ~1k first names playable; **Names week** seed theme |
-| Daily seed | UTC day → theme + seed from large themed pools (auto-changes) |
-| Daily / Friends tabs | Separate panels; friends = private ranks + invite |
-| Leaderboards | FBInstant `getLeaderboardAsync` daily + friends boards (API) |
-| Challenge / invite | `shareAsync` with seed + target score |
-| Custom keyboard | On-screen QWERTY + large **GO** under keys (no hints) |
-| Music | Menu = chilled ambient; Play = brighter loop; mute persists |
-| SFX | Word ok/bad, keys, start/end, timer |
-| FBInstant CDN | `fbinstant.6.3.js` required for hosting upload |
-| Upload bundle | `games/game.zip` (~0.9 MB) |
-
-**Pack status:** `info-packs/sample-word-streak/pack.json` → `in-production`.
-
-**Library (local only — gitignored):**  
-`data/library/word-streak-duels.json` holds App ID, paths, `fbListing`. Re-create in Library UI if missing after clone.
+- [ ] Business verification complete  
+- [ ] App Review + Publish (Live)  
+- [ ] Public privacy URL live (file ready; host e.g. GitHub Pages)  
+- [ ] Real ad fill reliable  
+- [ ] Shared multiplayer leaderboards (Meta context limits; own server option later)  
+- [ ] Optional media: portrait/square videos, splash polish  
+- [ ] Optional Facebook App Page for the game  
+- [ ] Better gameplay preview video (screen record) if desired  
 
 ---
 
-## Key paths
+## Product decisions (don’t re-litigate)
 
-```
-Facebook-Games/
-  Launch Facebook Games Studio.bat
-  electron/                 main + preload (IPC, upload targets, Explorer open)
-  src/                      Studio UI
-  info-packs/sample-word-streak/
-  games/word-streak-duels/  ← game source
-    index.html, styles.css, game.js, audio.js, words.js, names.js, fbapp-config.json
-  games/game.zip            ← Meta Web hosting upload
-  docs/
-    SESSION-HANDOFF.md      ← this file
-    DESIGN-JUDGMENT.md
-    INFO-PACK-SPEC.md
-  data/library/             local JSON (gitignored)
-```
-
-### Meta Instant Games upload (remember)
-
-1. Web hosting → **Upload Version** → drag `game.zip` (not Debug Mode).  
-2. Version comment (copy from studio FB Upload).  
-3. **Push to Production** or Play fails with “no production version”.  
-4. SDK CDN must be in `index.html` or Meta rejects zip.
-
-### App creation notes (locked)
-
-- Use case: **only** “Launch an Instant Game…” (Audience Network greys out — OK).  
-- Business portfolio: can skip for now.  
-- Contact email: not shown to players.  
-- Testers: **Roles**, not **Test users** (fake accounts).
+1. **Solo launch** — personal bests + share; not multiplayer cloud ranks.  
+2. **Publisher** always **Apex Arcade Studio**.  
+3. **Taglines ≤ 40 characters** for Meta Details.  
+4. **Category:** Trivia and Word.  
+5. **Ads:** rewarded only after scored round (streak freeze).  
+6. **App Page:** optional later.  
+7. **Zero permissions:** keep.  
+8. **One Business** for all games; **one Monetization property per game**.  
 
 ---
 
-## What is NOT done yet
+## Studio workflow (every future game)
 
-- [ ] Research → info pack automation pipeline  
-- [ ] Discovery assets (1024 icon, 1600×300 cover) generated/uploaded  
-- [ ] Real rewarded ads (Audience Network wiring; freeze still stub)  
-- [ ] Full public Publish / App Review / business verification if required  
-- [ ] Music polish beyond procedural Web Audio (optional)  
-- [ ] Confirm friends leaderboard with real second player  
-- [ ] Packaged `.exe` installer (optional; `.bat` works)
+1. Scaffold under `games/<slug>/` + `fb-listing.json` (copy from WSD, edit).  
+2. Create `store-assets/` with required media filenames (see FB Upload media section).  
+3. Library: App ID, paths.  
+4. Studio **FB Upload**: copy fields, open zip folder, check media status.  
+5. Meta: Instant Game only at create → Details → Web hosting → Monetization property → BV if needed → Publish.  
 
 ---
 
-## Suggested next session
+## Git / save status
 
-1. Confirm latest `game.zip` is on **Production** and mobile play feels right (keyboard, GO, menu music).  
-2. One full **challenge** test with a tester.  
-3. Optional: store art from `DISCOVERY.md` / studio copy fields.  
-4. Or start **game #2** from a new info pack / research pipeline.  
-5. Target rhythm: **~3 Instant Games/week**, Chris heavy on testing.
-
----
-
-## Git notes
+After this handoff commit + push:
 
 - Branch: `main`  
 - Remote: `origin` → https://github.com/aipagesnow/Facebook-Games.git  
-- `node_modules/`, `dist/`, `data/library/*.json` are gitignored.  
-- After clone: `npm install`, then launch `.bat` (builds UI).  
-- Rebuild game zip after game edits (or ask Grok): zip contents of `games/word-streak-duels` essentials into `games/game.zip`.
+- Includes: game source, store-assets, studio FB Upload media UI, docs (handoff, launch walkthrough, privacy HTML), pack one-liner updates, `games/game.zip`  
 
-### Quick rebuild game zip (PowerShell idea)
+Still local-only (gitignored):
 
-From `games/word-streak-duels`, zip:  
-`index.html`, `styles.css`, `game.js`, `audio.js`, `words.js`, `names.js`, `fbapp-config.json`  
-→ `../game.zip`
+- `data/library/*.json`  
+- `node_modules/`, `dist/`  
 
 ---
 
-## Quick reminders for Grok (cold start)
+## Suggested tomorrow order
 
-- Project path: `C:\Users\chris\OneDrive\Desktop\Facebook-Games`  
-- Read this file + pack docs when context is cold.  
-- Instant Games constraints: Zero Permissions, sub-3s mindset, FBInstant lifecycle, CDN SDK.  
-- Do not use App roles **Test users** for real people — use **Roles → Testers**.  
-- Prefer small, shippable updates; re-upload zip + Production after game changes.
+1. Business verification for Apex Arcade Studio.  
+2. Host privacy HTML → paste URL in Details if required.  
+3. App Review items Meta shows.  
+4. Publish app.  
+5. Friend test without tester role (if Live).  
+6. Optional: retest freeze ads on mobile.  
+7. Optional: next Instant Game using improved studio.  

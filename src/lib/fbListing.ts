@@ -5,18 +5,47 @@ import {
   type MetaUseCaseAdvice,
 } from './fbUseCases';
 
+/** Default Meta Business / studio name — reuse on every Instant Game Details form. */
+export const DEFAULT_PUBLISHER = 'Apex Arcade Studio';
+
+/** Default category label for Meta Details (Trivia & Word). */
+export const DEFAULT_CATEGORY = 'Trivia and Word';
+
+/** Meta Details Tagline hard limit (UI shows 40/40). Keep storeHook ≤ this. */
+export const TAGLINE_MAX_CHARS = 40;
+
+/** True if tagline fits Meta’s Details field. */
+export function isTaglineValid(tagline: string): boolean {
+  return (tagline || '').length > 0 && (tagline || '').length <= TAGLINE_MAX_CHARS;
+}
+
+/**
+ * Suggest a short tagline for future games (fits Meta 40-char limit).
+ * Prefer under 38 so punctuation isn’t tight.
+ */
+export function suggestShortTagline(genreHook: string): string {
+  const base = (genreHook || 'Play free Instant Games').trim();
+  if (base.length <= TAGLINE_MAX_CHARS) return base;
+  return base.slice(0, TAGLINE_MAX_CHARS - 1).trimEnd() + '…';
+}
+
 /** Fields you paste into developers.facebook Instant Games listing / notes. */
 export interface FbListing {
   title?: string;
   slug?: string;
   shortDescription?: string;
   longDescription?: string;
+  /** Meta Details “Tagline” (also stored historically as storeHook). Max ~40 chars. */
   storeHook?: string;
+  /** Meta Details “Publisher” — usually the Business / studio name. */
+  publisher?: string;
   category?: string;
   orientation?: string;
   tags?: string[];
   featureBullets?: string[];
   privacyPolicyUrl?: string;
+  /** Local path to privacy HTML before it is hosted publicly */
+  privacyPolicyFile?: string;
   buildFolder?: string;
   /** Zip file path for Meta Web hosting → Upload Version */
   uploadZipPath?: string;
@@ -25,6 +54,10 @@ export interface FbListing {
   entryFile?: string;
   configFile?: string;
   zeroPermissions?: boolean;
+  /** Connection experience: Zero Permissions (recommended for Instant Games) */
+  connectionExperience?: string;
+  /** Audience Network rewarded placement ID */
+  rewardedPlacementId?: string;
   sdkNotes?: string;
   iconBrief?: string;
   coverBrief?: string;
@@ -45,11 +78,13 @@ export function listingFromGame(game: PublishedGame): FbListing {
     shortDescription: fromFile.shortDescription || '',
     longDescription: fromFile.longDescription || '',
     storeHook: fromFile.storeHook || '',
-    category: fromFile.category || game.genre || '',
+    publisher: fromFile.publisher || DEFAULT_PUBLISHER,
+    category: fromFile.category || DEFAULT_CATEGORY || game.genre || '',
     orientation: fromFile.orientation || 'PORTRAIT',
     tags: fromFile.tags || [],
     featureBullets: fromFile.featureBullets || [],
     privacyPolicyUrl: fromFile.privacyPolicyUrl || '',
+    privacyPolicyFile: fromFile.privacyPolicyFile || '',
     buildFolder: fromFile.buildFolder || game.workspacePath || '',
     uploadZipPath:
       fromFile.uploadZipPath ||
@@ -63,6 +98,9 @@ export function listingFromGame(game: PublishedGame): FbListing {
     entryFile: fromFile.entryFile || 'index.html',
     configFile: fromFile.configFile || 'fbapp-config.json',
     zeroPermissions: fromFile.zeroPermissions ?? true,
+    connectionExperience:
+      fromFile.connectionExperience || 'Zero permissions (recommended for Instant Games)',
+    rewardedPlacementId: fromFile.rewardedPlacementId || '',
     sdkNotes: fromFile.sdkNotes || '',
     iconBrief: fromFile.iconBrief || '',
     coverBrief: fromFile.coverBrief || '',
@@ -116,6 +154,7 @@ export function formatListingClipboard(listing: FbListing, appId?: string): stri
     `Title: ${listing.title || ''}`,
     `Slug: ${listing.slug || ''}`,
     `App ID: ${appId || '(add after you create the app)'}`,
+    `Publisher: ${listing.publisher || DEFAULT_PUBLISHER}`,
     `Category: ${listing.category || ''}`,
     `Orientation: ${listing.orientation || 'PORTRAIT'}`,
     `Tags: ${tags}`,
@@ -123,7 +162,7 @@ export function formatListingClipboard(listing: FbListing, appId?: string): stri
     '',
     useCasesText,
     '',
-    '--- Store hook ---',
+    '--- Tagline (Meta Details, max ~40 chars) ---',
     listing.storeHook || '',
     '',
     '--- Short description ---',
@@ -135,6 +174,9 @@ export function formatListingClipboard(listing: FbListing, appId?: string): stri
     '--- Feature bullets ---',
     bullets,
     '',
+    '--- Connection experience ---',
+    listing.connectionExperience || 'Zero permissions',
+    '',
     '--- Build upload ---',
     `Folder (source): ${listing.buildFolder || ''}`,
     `Upload ZIP (Meta Web hosting → Upload Version): ${listing.uploadZipPath || ''}`,
@@ -142,8 +184,12 @@ export function formatListingClipboard(listing: FbListing, appId?: string): stri
     `Entry file: ${listing.entryFile || 'index.html'}`,
     `Config: ${listing.configFile || 'fbapp-config.json'}`,
     '',
-    '--- Privacy policy URL ---',
-    listing.privacyPolicyUrl || '(paste your URL)',
+    '--- Privacy ---',
+    `Privacy policy URL: ${listing.privacyPolicyUrl || '(host HTML then paste public URL)'}`,
+    `Privacy local file: ${listing.privacyPolicyFile || '(store-assets/privacy-….html)'}`,
+    '',
+    '--- Monetization ---',
+    `Rewarded placement ID: ${listing.rewardedPlacementId || '(from Monetization Manager)'}`,
     '',
     '--- Discovery art briefs ---',
     `Icon: ${listing.iconBrief || ''}`,

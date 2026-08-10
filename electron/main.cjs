@@ -349,6 +349,7 @@ ipcMain.handle('upload:listTargets', async () => {
         entryFile: 'index.html',
         configFile: 'fbapp-config.json',
         zeroPermissions: true,
+        // Library first, then games/<slug>/fb-listing.json wins (source of truth for upload copy)
         ...(existing?.fbListing || {}),
         ...(fbListing || {}),
         buildFolder:
@@ -359,10 +360,31 @@ ipcMain.handle('upload:listTargets', async () => {
           (fbListing && fbListing.uploadZipPath) ||
           (existing?.fbListing && existing.fbListing.uploadZipPath) ||
           uploadZipPath,
+        // Always prefer on-disk game listing for version comment when present
+        versionComment:
+          (fbListing && fbListing.versionComment) ||
+          (existing?.fbListing && existing.fbListing.versionComment) ||
+          '',
       },
     };
 
-    byId.set(id, existing ? { ...synthesized, ...existing, fbListing: synthesized.fbListing, packPath: pack.absolutePath, packFolderName: pack.folderName, workspacePath: synthesized.workspacePath || existing.workspacePath } : synthesized);
+    // Keep synthesized.fbListing — do not let a stale library blob overwrite versionComment
+    byId.set(
+      id,
+      existing
+        ? {
+            ...existing,
+            ...synthesized,
+            facebookAppId: existing.facebookAppId || synthesized.facebookAppId,
+            notes: existing.notes || synthesized.notes,
+            status: existing.status || synthesized.status,
+            fbListing: synthesized.fbListing,
+            packPath: pack.absolutePath,
+            packFolderName: pack.folderName,
+            workspacePath: synthesized.workspacePath || existing.workspacePath,
+          }
+        : synthesized
+    );
   }
 
   const games = Array.from(byId.values()).sort((a, b) =>

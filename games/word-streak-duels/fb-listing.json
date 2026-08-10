@@ -1,71 +1,81 @@
 {
   "title": "Word Streak Duels",
   "slug": "word-streak-duels",
-  "shortDescription": "60-second word duels with friends. Chain words from a daily seed, protect your streak, and challenge friends.",
-  "longDescription": "Race a 60-second word ladder from a shared seed. Each word must start with the last letter of the previous word. Beat friends asynchronously, protect a daily streak, and share your longest chain.\n\nâ€¢ Daily ladder seeds and themed weeks\nâ€¢ One-tap friend challenges\nâ€¢ Streaks with optional freeze\nâ€¢ Hints when you need a nudge\nâ€¢ Instant play â€” no login wall (Zero Permissions ready)",
-  "storeHook": "60-second word duels with friends",
-  "category": "Word / Puzzle",
+  "publisher": "Apex Arcade Studio",
+  "shortDescription": "60-second daily word ladder. Chain words from today's seed, beat your best, keep your streak, and share your score with friends.",
+  "longDescription": "Play a fast 60-second word ladder every day.\n\nStart from today's seed word. Each new word must begin with the last letter of the previous one. Build the longest chain you can before time runs out.\n\n• Daily seed that changes every day (themed weeks)\n• Personal bests on today's ladder\n• Daily streak with optional streak freezes\n• Long-word bonus points for bigger plays\n• Share your score so friends can try to beat you\n• Instant play — no login wall\n\nPerfect for a quick brain break. Come back tomorrow for a new seed!",
+  "storeHook": "60s daily word ladder — beat your best!",
+  "_taglineNote": "Meta Tagline max 40 characters. Always keep storeHook ≤ 40 for every game.",
+  "category": "Trivia and Word",
   "orientation": "PORTRAIT",
   "tags": [
     "word",
     "puzzle",
     "daily",
-    "challenge",
     "streak",
-    "friends"
+    "casual",
+    "ladder"
   ],
   "featureBullets": [
-    "Daily word ladder in 60 seconds",
-    "Challenge friends with your seed and score",
-    "Streaks and optional streak freeze",
-    "Hints without interrupting typing",
-    "Zero Permissions â€” play instantly"
+    "Daily 60-second word ladder from a shared seed",
+    "Each word starts with the last letter of the previous",
+    "Personal bests and daily streak tracking",
+    "Streak freezes (watch a short ad to earn one)",
+    "Long-word bonus points for 7+ letter words",
+    "Share your score with friends in one tap",
+    "Instant play — Zero Permissions"
   ],
-  "privacyPolicyUrl": "",
+  "privacyPolicyUrl": "https://aipagesnow.github.io/Facebook-Games/privacy-word-streak-duels.html",
+  "privacyPolicyFile": "C:\\Users\\chris\\OneDrive\\Desktop\\Facebook-Games\\games\\word-streak-duels\\store-assets\\privacy-word-streak-duels.html",
   "buildFolder": "C:\\Users\\chris\\OneDrive\\Desktop\\Facebook-Games\\games\\word-streak-duels",
   "entryFile": "index.html",
   "configFile": "fbapp-config.json",
   "zeroPermissions": true,
-  "sdkNotes": "FBInstant.initializeAsync â†’ setLoadingProgress â†’ startGameAsync. shareAsync for challenges. Mock SDK for local preview.",
-  "iconBrief": "1024Ã—1024 â€” large letter tiles W Â· S Â· D, high contrast, flat lighting, no tiny text. Readable at 48â€“64px.",
-  "coverBrief": "1600Ã—300 â€” left: letter chain, center: Word Streak Duels wordmark, right: two simple avatars + VS badge. Sell friends + words + speed.",
-  "shareImageIdea": "I chained 12 words from CRANE â€” beat me (streak badge + seed of the day)",
-  "videoBrief": "â‰¤15s: 0â€“2s finger typing first word; 2â€“4s score pop + Challenge button.",
+  "connectionExperience": "Zero permissions (recommended for Instant Games)",
+  "rewardedPlacementId": "1593839865675820_1595058932220580",
+  "sdkNotes": "FBInstant.initializeAsync → setLoadingProgress → startGameAsync. shareAsync / invite for share score. getRewardedVideoAsync for streak freeze. Local personal bests. Placement ID: 1593839865675820_1595058932220580.",
+  "iconBrief": "1024×1024 — three large gold letter tiles W · S · D on deep navy. High contrast, flat lighting, no tiny text. Readable at 48–64px.",
+  "coverBrief": "1600×300 — deep navy background, gold letter tiles chain, Word Streak Duels title, tagline: 60-second daily word ladder. Clean, premium casual.",
+  "shareImageIdea": "I scored 650 on seed COURT — can you beat my chain?",
+  "videoBrief": "≤15s: 0–3s typing a word from seed; 3–6s score pop + GO; 6–10s end screen share.",
   "checklist": [
-    "Create Instant Games product on developers.facebook.com",
-    "Upload web host / zip of build folder (entry: index.html)",
-    "Include fbapp-config.json (PORTRAIT)",
-    "App icon 1024Ã—1024",
-    "Cover image 1600Ã—300",
-    "Category: Word / Puzzle",
-    "Description + short description from this listing",
-    "Privacy policy URL",
-    "Zero Permissions / SDK v8+ readiness",
-    "Test share / challenge path in embedded player",
-    "Register App ID back in Games Studio Library"
+    "Production zip uploaded (latest game.zip)",
+    "App mode set to Live / Published",
+    "Instant Games Details: tagline, short + long description",
+    "Category: Trivia and Word",
+    "Publisher: Apex Arcade Studio",
+    "App icon 1024×1024 uploaded",
+    "Cover image 1600×300 uploaded",
+    "Privacy policy URL live",
+    "Publisher / contact fields complete",
+    "Zero Permissions confirmed",
+    "Play link tested on mobile Facebook app",
+    "Share score tested",
+    "Rewarded freeze ad tested when fill available",
+    "App ID registered in Games Studio Library"
   ],
   "useCaseOverrides": [
     {
       "name": "Launch an Instant Game on Facebook and Messenger",
       "pick": "required",
-      "why": "Only use case to select at create time. Meta greys out Audience Network when this is checked â€” expected."
+      "why": "Core Instant Game use case."
     },
     {
       "name": "Advertise on your app with Meta Audience Network",
-      "pick": "skip",
-      "why": "Incompatible at create time with Instant Game. Add monetization later in Instant Games / Audience Network settings on the app dashboard."
+      "pick": "optional",
+      "why": "Added later via Show ads for rewarded streak freeze. Not selected at app create time."
     },
     {
       "name": "Create & manage app ads with Meta Ads Manager",
       "pick": "skip",
-      "why": "Wrong product (app install ads). Not for Instant Games host."
+      "why": "Paying to run ads — separate from in-game rewarded video."
     },
     {
       "name": "Authenticate and request data from users with Facebook Login",
       "pick": "skip",
-      "why": "Zero Permissions Instant Game â€” no classic Login."
+      "why": "Zero Permissions Instant Game — no classic Login."
     }
   ],
   "uploadZipPath": "C:\\\\Users\\\\chris\\\\OneDrive\\\\Desktop\\\\Facebook-Games\\\\games\\\\game.zip",
-  "versionComment": "v1.6 louder music, custom word keyboard, UI polish, core-word guarantee (star etc)."
+  "versionComment": "v1.21 solo launch: personal bests, share score, streak freezes + rewarded ad placement 1593839865675820_1595058932220580, long-word bonuses, play-only music."
 }

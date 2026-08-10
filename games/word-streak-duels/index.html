@@ -28,107 +28,68 @@
       <section id="screen-home" class="screen" hidden>
         <header class="top-bar">
           <div>
-            <p class="eyebrow">Word ladder duels</p>
+            <p class="eyebrow">Daily word ladder</p>
             <h1>Word Streak Duels</h1>
           </div>
           <div class="top-actions">
             <button id="muteBtn" type="button" class="icon-btn" title="Mute sound" aria-label="Mute sound">
               🔊
             </button>
-            <div class="streak-pill" title="Daily streak">
+            <div
+              class="streak-pill"
+              title="Days in a row you’ve played. Streak freezes protect this if you miss a day."
+            >
               <span aria-hidden="true">🔥</span>
               <strong id="homeStreak">0</strong>
             </div>
           </div>
         </header>
 
-        <div class="mode-tabs" role="tablist" aria-label="Play mode">
-          <button type="button" class="mode-tab active" data-mode="daily" id="tabDaily">
-            Daily
-          </button>
-          <button type="button" class="mode-tab" data-mode="friends" id="tabFriends">
-            Friends
-          </button>
-        </div>
-
         <div id="challengeBanner" class="challenge-banner" hidden>
           <p class="eyebrow">Friend challenge</p>
           <p id="challengeText">Beat their score!</p>
         </div>
 
-        <!-- Daily panel -->
-        <div id="panelDaily" class="mode-panel">
-          <div class="seed-card">
-            <p class="eyebrow">Today’s seed <span class="seed-note">(new every day)</span></p>
-            <div id="homeSeed" class="seed-word">CRANE</div>
-            <p id="homeTheme" class="muted theme-line">Classic chain</p>
-          </div>
-
-          <div class="stat-row stat-row-2">
-            <div class="stat-box">
-              <span class="stat-label">Best today</span>
-              <strong id="homeBest">0</strong>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">Freeze left</span>
-              <strong id="homeFreeze">0</strong>
-            </div>
-          </div>
-
-          <button id="playBtn" type="button" class="btn btn-primary btn-lg">
-            Play 60s daily round
-          </button>
-          <button id="dailyBoardBtn" type="button" class="btn btn-secondary">
-            Daily leaderboard
-          </button>
-          <p class="tip muted">
-            Everyone shares today’s seed. Score hits the daily board. Seed changes automatically at midnight (UTC day).
-          </p>
+        <div class="seed-card">
+          <p class="eyebrow">Today’s seed <span class="seed-note">(new every day)</span></p>
+          <div id="homeSeed" class="seed-word">CRANE</div>
+          <p id="homeTheme" class="muted theme-line">Classic chain</p>
         </div>
 
-        <!-- Friends panel -->
-        <div id="panelFriends" class="mode-panel" hidden>
-          <div class="friends-card">
-            <p class="eyebrow">Private with friends &amp; family</p>
-            <h2 class="friends-title">Friends duels</h2>
-            <p class="muted friends-copy">
-              Play the same daily ladder, rank only against Facebook friends who play, and send one-tap challenges. Perfect for private groups.
-            </p>
-            <div class="stat-row" style="margin-top: 12px">
-              <div class="stat-box">
-                <span class="stat-label">Seed</span>
-                <strong id="friendsSeed" style="font-size: 0.95rem">—</strong>
-              </div>
-              <div class="stat-box">
-                <span class="stat-label">Your best</span>
-                <strong id="friendsBest">0</strong>
-              </div>
-              <div class="stat-box">
-                <span class="stat-label">Streak</span>
-                <strong id="friendsStreak">0</strong>
-              </div>
-            </div>
+        <div class="stat-row stat-row-2">
+          <div class="stat-box">
+            <span class="stat-label">Best today</span>
+            <strong id="homeBest">0</strong>
           </div>
-
-          <button id="friendsPlayBtn" type="button" class="btn btn-primary btn-lg">
-            Play friends round
-          </button>
-          <button id="friendsBoardBtn" type="button" class="btn btn-secondary">
-            Friends leaderboard
-          </button>
-          <button id="friendsInviteBtn" type="button" class="btn btn-ghost">
-            Invite / challenge a friend
-          </button>
-          <p class="tip muted">
-            Friends board only shows people you’re connected with on Facebook who have scored. Invite them so your circle can compete privately.
-          </p>
+          <div
+            class="stat-box"
+            title="If you miss a day, one streak freeze keeps your 🔥 streak alive. Earn freezes by watching a short ad after a round."
+          >
+            <span class="stat-label">Streak freezes</span>
+            <strong id="homeFreeze">0</strong>
+          </div>
         </div>
+
+        <button id="playBtn" type="button" class="btn btn-primary btn-lg">
+          Play 60 seconds
+        </button>
+        <button id="dailyBoardBtn" type="button" class="btn btn-secondary">
+          My bests
+        </button>
+        <button id="friendsInviteBtn" type="button" class="btn btn-ghost">
+          Share with a friend
+        </button>
+        <p id="friendsInviteStatus" class="invite-status" role="status" aria-live="polite"></p>
+        <p class="tip muted home-tip">
+          Same seed for everyone each day. Beat your best score, keep your 🔥 streak, and share a link so friends can try to top you.
+          <span class="tip-freeze">Streak freezes keep your streak if you miss a day — earn one with a short ad after a round.</span>
+        </p>
       </section>
 
       <!-- Play -->
       <section id="screen-play" class="screen" hidden>
         <div class="play-top">
-          <span id="playModeBadge" class="mode-badge">Daily</span>
+          <span id="playModeBadge" class="mode-badge">60s</span>
           <button id="muteBtnPlay" type="button" class="icon-btn icon-btn-sm" title="Mute sound" aria-label="Mute sound">
             🔊
           </button>
@@ -139,19 +100,20 @@
             <strong id="timer" class="hud-value">60</strong>
           </div>
           <div class="hud-cell hud-center">
-            <span class="stat-label">Need</span>
-            <strong id="needLetter" class="need-letter">E</strong>
+            <span class="stat-label need-label">Must start with</span>
+            <strong id="needLetter" class="need-letter" title="Your next word’s first letter">E</strong>
           </div>
-          <div class="hud-cell">
+          <div class="hud-cell hud-score">
             <span class="stat-label">Score</span>
             <strong id="score" class="hud-value">0</strong>
+            <span id="scoreBonusPop" class="score-bonus-pop" hidden aria-hidden="true"></span>
           </div>
         </header>
 
-        <p id="playStatus" class="status-line" role="status">Build the chain…</p>
+        <p id="playStatus" class="status-line" role="status">Chain words from the seed…</p>
 
         <div id="targetBar" class="target-bar" hidden>
-          Target: <strong id="targetScore">0</strong>
+          Beat <strong id="targetScore">0</strong>
           <span id="targetDelta" class="muted"></span>
         </div>
 
@@ -219,37 +181,46 @@
         <p id="boardStatus" class="status-line muted"></p>
 
         <button id="shareBtn" type="button" class="btn btn-primary btn-lg">
-          Challenge a friend
+          Share score
         </button>
         <button id="endBoardBtn" type="button" class="btn btn-secondary">
-          View leaderboard
+          View my bests
         </button>
-        <button id="freezeBtn" type="button" class="btn btn-secondary">
-          Protect streak (watch ad)
+        <button
+          id="freezeBtn"
+          type="button"
+          class="btn btn-secondary"
+          title="Watch a short ad to earn a streak freeze. Miss a day and a freeze keeps your streak."
+        >
+          Earn streak freeze (watch ad)
         </button>
         <button id="replayBtn" type="button" class="btn btn-ghost">Play again</button>
         <button id="homeBtn" type="button" class="btn btn-ghost">Home</button>
       </section>
 
-      <!-- Leaderboard overlay -->
+      <!-- Personal bests -->
       <section id="screen-board" class="screen overlay-screen" hidden>
         <header class="top-bar">
           <div>
-            <p class="eyebrow" id="boardEyebrow">Leaderboard</p>
-            <h1 id="boardTitle">Daily ranks</h1>
+            <p class="eyebrow" id="boardEyebrow">Your scores</p>
+            <h1 id="boardTitle">My bests</h1>
           </div>
           <button id="boardCloseBtn" type="button" class="icon-btn" aria-label="Close">✕</button>
         </header>
         <p id="boardSubtitle" class="muted board-sub"></p>
         <ol id="boardList" class="board-list"></ol>
         <p id="boardEmpty" class="tip muted" hidden>
-          No scores yet — play a round to claim the top spot.
+          No scores yet — play a round to set your best.
         </p>
-        <button id="boardPlayBtn" type="button" class="btn btn-primary btn-lg">Play this ladder</button>
+        <button id="boardPlayBtn" type="button" class="btn btn-primary btn-lg">Play 60 seconds</button>
       </section>
     </div>
 
     <script src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+    <script>
+      // Meta Audience Network — Rewarded Video (Streak Freeze)
+      window.WSD_REWARDED_PLACEMENT_ID = '1593839865675820_1595058932220580';
+    </script>
     <script src="audio.js"></script>
     <script src="words.js"></script>
     <script src="names.js"></script>

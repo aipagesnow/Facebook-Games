@@ -1,27 +1,36 @@
-{
-  "id": "sample-word-streak",
-  "title": "Word Streak Duels",
-  "slug": "word-streak-duels",
-  "status": "in-production",
-  "genre": "word",
-  "oneLiner": "Daily word ladders vs friends — beat their streak, share your best chain, back tomorrow for the next ladder.",
-  "inspiredBy": ["Words With Friends-style social word play", "AHA / WOW-style instant trivia onboarding"],
-  "targetAudience": "Casual FB players 18–44 who open Messenger/Gaming Tab for 2–5 minute sessions; enjoy light word puzzles and friend competition more than deep strategy.",
-  "createdAt": "2026-08-07",
-  "tags": ["word", "daily", "asynchronous", "challenge", "streak"],
-  "scores": {
-    "instantGamesDna": 9,
-    "naturalSocial": 9,
-    "smallTeamBuild": 8,
-    "growthTrajectory": 7,
-    "absolutePopularityProxy": 8
-  },
-  "pillars": {
-    "coreLoop": "See 5 letters → make the longest valid chain in 60s → post score to context",
-    "social": "Challenge friend with your seed word; async rematch; group leaderboard",
-    "retention": "Daily ladder seed + streak freeze (rewarded ad) + weekly themed packs",
-    "monetization": "Rewarded ad for hint / streak freeze; light IAP for cosmetic tiles + extra daily ladder",
-    "discovery": "Bold letter-tile icon; cover shows two friends racing a word chain",
-    "liveOps": "Theme weeks (sports, movies), limited ladders, seasonal dictionaries"
-  }
+﻿{
+    "id":  "sample-word-streak",
+    "title":  "Word Streak Duels",
+    "slug":  "word-streak-duels",
+    "status":  "in-production",
+    "genre":  "word",
+    "oneLiner":  "60-second daily word ladder — beat your best, keep your streak, share your score.",
+    "inspiredBy":  [
+                       "Words With Friends-style social word play",
+                       "AHA / WOW-style instant trivia onboarding"
+                   ],
+    "targetAudience":  "Casual FB players 18–44 who open Messenger/Gaming Tab for 2–5 minute sessions; enjoy light word puzzles and friend competition more than deep strategy.",
+    "createdAt":  "2026-08-07",
+    "tags":  [
+                 "word",
+                 "daily",
+                 "asynchronous",
+                 "challenge",
+                 "streak"
+             ],
+    "scores":  {
+                   "instantGamesDna":  9,
+                   "naturalSocial":  9,
+                   "smallTeamBuild":  8,
+                   "growthTrajectory":  7,
+                   "absolutePopularityProxy":  8
+               },
+    "pillars":  {
+                    "coreLoop":  "See seed → chain words in 60s (last letter rule) → beat personal best",
+                    "social":  "Share score with seed + target; friends try to beat you",
+                    "retention":  "Daily ladder seed + streak freeze (rewarded ad) + weekly themed packs",
+                    "monetization":  "Rewarded ad for hint / streak freeze; light IAP for cosmetic tiles + extra daily ladder",
+                    "discovery":  "Bold letter-tile icon; cover shows two friends racing a word chain",
+                    "liveOps":  "Theme weeks (sports, movies), limited ladders, seasonal dictionaries"
+                }
 }
