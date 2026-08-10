@@ -1,17 +1,18 @@
 # Session handoff — Facebook Games Studio + Word Streak Duels
 
-**Last updated:** 2026-08-10 (break / lock-in after launch prep)  
-**Status:** Game soft-shipped on Production; Details media largely done; **Business verification** next, then App Review → Publish (Live).  
+**Last updated:** 2026-08-10 (business verification fill-out)  
+**Status:** Game soft-shipped on Production; Details media largely done; **Business verification in progress** (Security Centre eligible) → then App Review → Publish (Live).  
 **Repo:** https://github.com/aipagesnow/Facebook-Games  
 **Local:** `C:\Users\chris\OneDrive\Desktop\Facebook-Games`
 
 ---
 
-## Resume checklist (tomorrow)
+## Resume checklist (now)
 
 1. Open project folder (or `git pull` on `main`).  
-2. Launch studio: `Launch Facebook Games Studio.bat` or Desktop shortcut.  
-3. **Meta first:** [developers.facebook.com](https://developers.facebook.com) → Word Streak Duels → **Review → Verification** → **Start verification** for **Apex Arcade Studio**.  
+2. **Meta first:** [Security Centre](https://business.facebook.com/settings/security) → Apex Arcade Studio → **Start verification**.  
+   Full fill-out guide: `docs/BUSINESS-VERIFICATION.md`  
+3. Use case dropdown: **App requires access to permissions on Meta for Developers**.  
 4. When Business Verification approved → **App Review** → **Publish** (app still shows **Unpublished**).  
 5. Confirm privacy policy URL is hosted and pasted in Details if Meta requires it.  
 6. Final public test: https://www.facebook.com/gaming/play/1593839865675820/  
@@ -26,7 +27,8 @@
 | Desktop launch pack | `Desktop\WSD-Launch-Assets\` |
 | Upload zip | `games/game.zip` + Desktop `game.zip` |
 | FB listing copy | `games/word-streak-duels/fb-listing.json` + Studio **FB Upload** |
-| Privacy HTML | `docs/privacy-word-streak-duels.html` + store-assets copy |
+| Studio website (GitHub Pages) | `docs/index.html` → `https://aipagesnow.github.io/Facebook-Games/` |
+| Privacy HTML | `docs/privacy-word-streak-duels.html` → `…/privacy-word-streak-duels.html` |
 | Launch walkthrough | `docs/LAUNCH-WALKTHROUGH.md` |
 | App ID | `1593839865675820` |
 | Rewarded placement | `1593839865675820_1595058932220580` |
@@ -65,7 +67,7 @@
 | App Page | Skipped (optional later) |
 | Zero permissions | Selected |
 | Web hosting Production | Soft-shipped |
-| Business Verification | **Unverified — START TOMORROW** |
+| Business Verification | **Eligible — use `docs/BUSINESS-VERIFICATION.md`** |
 | App Review | Pending after BV |
 | Publish / Live | **Unpublished** until checklist complete |
 | Ads | Placement created; fill often missing (mobile better than desktop) |
@@ -129,12 +131,12 @@ Still local-only (gitignored):
 
 ---
 
-## Suggested tomorrow order
+## Suggested order (ship)
 
-1. Business verification for Apex Arcade Studio.  
-2. Host privacy HTML → paste URL in Details if required.  
+1. **Business verification** for Apex Arcade Studio — follow `docs/BUSINESS-VERIFICATION.md`.  
+2. Host privacy HTML (GitHub Pages) → paste URL in Details if required.  
 3. App Review items Meta shows.  
-4. Publish app.  
-5. Friend test without tester role (if Live).  
+4. Publish app (Live).  
+5. Friend test without tester role.  
 6. Optional: retest freeze ads on mobile.  
 7. Optional: next Instant Game using improved studio.  
