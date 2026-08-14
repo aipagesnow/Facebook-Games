@@ -267,7 +267,9 @@ body {
   max-height: min(88dvh, 640px);
   overflow-y: auto;
   padding: 20px 18px 18px;
-  background: rgba(9, 22, 34, 0.92);
+  background:
+    linear-gradient(180deg, rgba(28, 52, 36, 0.35), transparent 42%),
+    rgba(9, 22, 34, 0.93);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 2px solid rgba(255, 215, 0, 0.5);
@@ -300,10 +302,13 @@ body {
 .game-title {
   font-size: clamp(26px, 8vw, 32px);
   font-weight: 900;
-  color: #ffd700;
   margin-bottom: 2px;
-  text-shadow: 0 3px 10px rgba(255, 215, 0, 0.3), 2px 2px 0 #000;
   letter-spacing: 1px;
+  background: linear-gradient(180deg, #fff6b0 0%, #ffd700 42%, #f0a202 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 10px rgba(255, 215, 0, 0.35)) drop-shadow(2px 2px 0 #000);
 }
 
 .game-over-title {

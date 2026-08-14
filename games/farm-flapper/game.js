@@ -61,6 +61,8 @@
   let dustPuffs = [];
   let eggSplats = [];
   let sparkles = [];
+  let flapTrail = [];
+  let blinkTimer = 80;
 
   const BEST_KEY = "farmFlapperBest";
   const MUTE_KEY = "farmFlapperMuted";
@@ -857,6 +859,18 @@
   // ============================================================
   //  RENDERING & BARNYARD VISUAL FX
   // ============================================================
+  function buzz(ms) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function dayBlend() {
+    return (Math.sin((gameStats.timeAliveFrames || frames) * 0.012) + 1) / 2;
+  }
+
   function drawSky() {
     const grad = ctx.createLinearGradient(0, 0, 0, H - GROUND_H);
     if (starTimer > 0) {
@@ -865,15 +879,28 @@
       grad.addColorStop(0.5, `hsl(${(hue + 40) % 360}, 85%, 26%)`);
       grad.addColorStop(1, `hsl(${(hue + 80) % 360}, 85%, 40%)`);
     } else {
-      grad.addColorStop(0, "#4a90e2");
-      grad.addColorStop(0.4, "#63a4ff");
-      grad.addColorStop(0.75, "#90caf9");
-      grad.addColorStop(1, "#e3f2fd");
+      const gold = dayBlend();
+      grad.addColorStop(0, mixHex("#3d7ed4", "#6b4c9a", gold * 0.55));
+      grad.addColorStop(0.35, mixHex("#63a4ff", "#e07a3d", gold * 0.45));
+      grad.addColorStop(0.72, mixHex("#a8d4f7", "#ffc37a", gold * 0.5));
+      grad.addColorStop(1, mixHex("#eef6ff", "#ffe7c2", gold * 0.6));
     }
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H - GROUND_H);
 
-    // Clover Sparkle Field during Clover Power
+    if (starTimer <= 0) {
+      const sunX = 52 + dayBlend() * 18;
+      const sunY = 48 + (1 - dayBlend()) * 22;
+      const sg = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, 46);
+      sg.addColorStop(0, "rgba(255, 248, 210, 0.95)");
+      sg.addColorStop(0.35, "rgba(255, 210, 90, 0.55)");
+      sg.addColorStop(1, "rgba(255, 180, 60, 0)");
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 46, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     if (starTimer > 0) {
       for (let i = 0; i < 24; i++) {
         const sx = ((i * 37 + frames * 2) % (W + 20)) - 10;
@@ -886,8 +913,7 @@
         ctx.fill();
       }
     } else {
-      // Warm Sunbeams
-      ctx.fillStyle = "rgba(255, 255, 220, 0.06)";
+      ctx.fillStyle = "rgba(255, 255, 220, 0.07)";
       ctx.beginPath();
       ctx.moveTo(30, 0);
       ctx.lineTo(140, H - GROUND_H);
@@ -896,10 +922,8 @@
       ctx.fill();
     }
 
-    // Parallax Barnyard Scenery: Rolling Pasture Hills, Red Barn & Windmill
     drawBarnScenery();
 
-    // Floating Ambient Pollen Dust & Leaves
     for (let i = 0; i < 18; i++) {
       const px = ((i * 47 + frames * 0.8) % (W + 40)) - 20;
       const py = (i * 29 + Math.sin(frames * 0.03 + i) * 12) % (H - GROUND_H - 30);
@@ -921,13 +945,32 @@
     drawCloud(80 - skyOffset * 0.4, 65, 1);
     drawCloud(260 - skyOffset * 0.3, 115, 0.85);
     drawCloud(390 - skyOffset * 0.35, 50, 0.95);
+    drawCloud(170 - skyOffset * 0.22, 88, 0.7);
+  }
+
+  function mixHex(a, b, t) {
+    const pa = parseInt(a.slice(1), 16);
+    const pb = parseInt(b.slice(1), 16);
+    const k = Math.max(0, Math.min(1, t));
+    const r = ((pa >> 16) & 255) * (1 - k) + ((pb >> 16) & 255) * k;
+    const g = ((pa >> 8) & 255) * (1 - k) + ((pb >> 8) & 255) * k;
+    const bl = (pa & 255) * (1 - k) + (pb & 255) * k;
+    return `rgb(${r | 0},${g | 0},${bl | 0})`;
   }
 
   function drawBarnScenery() {
     const yBase = H - GROUND_H;
 
-    // Distant Rolling Green Pasture Hills
-    ctx.fillStyle = "rgba(100, 180, 75, 0.45)";
+    const scroll = (skyOffset * 0.18) % 80;
+    ctx.fillStyle = "rgba(90, 150, 110, 0.38)";
+    ctx.beginPath();
+    ctx.moveTo(-40 - scroll, yBase);
+    ctx.quadraticCurveTo(70 - scroll, yBase - 72, 190 - scroll, yBase);
+    ctx.quadraticCurveTo(300 - scroll, yBase - 88, 460 - scroll, yBase);
+    ctx.lineTo(460, yBase);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(100, 180, 75, 0.5)";
     ctx.beginPath();
     ctx.moveTo(-20, yBase);
     ctx.quadraticCurveTo(80, yBase - 60, 180, yBase);
@@ -935,7 +978,7 @@
     ctx.lineTo(420, yBase);
     ctx.fill();
 
-    ctx.fillStyle = "rgba(75, 150, 50, 0.65)";
+    ctx.fillStyle = "rgba(75, 150, 50, 0.68)";
     ctx.beginPath();
     ctx.moveTo(-10, yBase);
     ctx.quadraticCurveTo(120, yBase - 45, 250, yBase);
@@ -1013,15 +1056,19 @@
 
   function drawCloud(x, y, s) {
     const wrapX = ((x % (W + 140)) + (W + 140)) % (W + 140) - 70;
-    ctx.fillStyle = starTimer > 0 ? "rgba(255, 235, 150, 0.9)" : "rgba(255, 255, 255, 0.88)";
-    ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
-    ctx.shadowBlur = 8;
+    ctx.fillStyle = starTimer > 0 ? "rgba(255, 235, 150, 0.9)" : "rgba(255, 255, 255, 0.82)";
+    ctx.shadowColor = "rgba(20, 40, 70, 0.18)";
+    ctx.shadowBlur = 10;
     ctx.beginPath();
     ctx.ellipse(wrapX, y, 32 * s, 18 * s, 0, 0, Math.PI * 2);
     ctx.ellipse(wrapX + 25 * s, y + 4 * s, 23 * s, 15 * s, 0, 0, Math.PI * 2);
     ctx.ellipse(wrapX - 23 * s, y + 6 * s, 21 * s, 13 * s, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
+    ctx.fillStyle = starTimer > 0 ? "rgba(255, 255, 220, 0.35)" : "rgba(255, 255, 255, 0.35)";
+    ctx.beginPath();
+    ctx.ellipse(wrapX - 8 * s, y - 4 * s, 14 * s, 7 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   function drawGround() {
@@ -1047,6 +1094,15 @@
       ctx.lineTo(x + 8, y - 10);
       ctx.lineTo(x + 16, y);
       ctx.fill();
+    }
+    for (let x = -groundOffset * 1.4; x < W + 24; x += 28) {
+      const bloom = (Math.floor(x + groundOffset) / 28) % 3;
+      ctx.fillStyle = bloom === 0 ? "#fff59d" : bloom === 1 ? "#ef9a9a" : "#ce93d8";
+      ctx.beginPath();
+      ctx.arc(x + 10, y + 7, 2.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#558b2f";
+      ctx.fillRect(x + 9.2, y + 8, 1.6, 5);
     }
     // Soil layer
     ctx.fillStyle = "#795548";
@@ -2032,6 +2088,46 @@
     ctx.restore();
   }
 
+  function drawFlapTrail() {
+    for (const t of flapTrail) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, t.life / 14) * 0.28;
+      ctx.fillStyle = starTimer > 0 ? "#76ff03" : "#ffe082";
+      ctx.beginPath();
+      ctx.ellipse(t.x, t.y, 14, 9, t.rot || 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawVignette() {
+    const vg = ctx.createRadialGradient(W * 0.45, H * 0.4, H * 0.2, W * 0.5, H * 0.5, H * 0.78);
+    vg.addColorStop(0, "rgba(0,0,0,0)");
+    vg.addColorStop(1, "rgba(6, 16, 25, 0.28)");
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function checkNearMiss() {
+    if (state !== STATE.PLAYING || starTimer > 0 || dismountInvincibleTimer > 0) return;
+    const box = duckHitbox();
+    for (const p of pipes) {
+      if (p.nearMiss) continue;
+      const inX = box.x + box.w > p.x && box.x < p.x + pipeWidth;
+      if (!inX) continue;
+      const gapTop = p.top;
+      const gapBot = p.top + p.gap;
+      const dTop = box.y - gapTop;
+      const dBot = gapBot - (box.y + box.h);
+      if (dTop > 0 && dBot > 0 && (dTop < 11 || dBot < 11)) {
+        p.nearMiss = true;
+        addScore(2, duck.x + duck.w / 2, duck.y - 12, "CLOSE +2", "#fff59d", false);
+        spawnSparkles(duck.x + duck.w / 2, duck.y + duck.h / 2, "#fff59d");
+        buzz(8);
+      }
+    }
+  }
+
   function drawDuck() {
     ctx.save();
     ctx.translate(duck.x + duck.w / 2, duck.y + duck.h / 2);
@@ -2129,19 +2225,30 @@
     ctx.arc(12, -2, 3.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Expressive Eye with Glint
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(16, -8, 4.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#1a1a1a";
-    ctx.beginPath();
-    ctx.arc(17, -8, 2.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(18, -9, 0.9, 0, Math.PI * 2);
-    ctx.fill();
+    blinkTimer--;
+    if (blinkTimer < 0) blinkTimer = 70 + (frames % 40);
+    const blinking = blinkTimer < 5;
+    if (blinking) {
+      ctx.strokeStyle = "#1a1a1a";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(13, -8);
+      ctx.lineTo(20, -8);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(16, -8, 4.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#1a1a1a";
+      ctx.beginPath();
+      ctx.arc(17, -8, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(18, -9, 0.9, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // Curved Orange Bill with Nostril & Smile
     ctx.fillStyle = beakColor;
@@ -2307,6 +2414,8 @@
     popups = [];
     explosions = [];
     feathers = [];
+    flapTrail = [];
+    blinkTimer = 80;
     sectionCounter = 0;
     score = 0;
     frames = 0;
@@ -2558,7 +2667,15 @@
       duck.vy = flapPower;
       duck.wing = 0;
       spawnFeathers(duck.x + 10, duck.y + duck.h / 2);
+      flapTrail.push({
+        x: duck.x + duck.w / 2,
+        y: duck.y + duck.h / 2,
+        life: 12,
+        rot: duck.rotation,
+      });
+      if (flapTrail.length > 10) flapTrail.shift();
       AudioFX.flap();
+      buzz(7);
     }
   }
 
@@ -2717,6 +2834,7 @@
     isRidingYoshi = false;
     AudioFX.stopMusic();
     AudioFX.hit();
+    buzz(28);
     if (hudEl) hudEl.classList.add("hidden");
     if (playerChip) playerChip.classList.add("hidden");
     if (extraLivesEl) extraLivesEl.classList.add("hidden");
@@ -3497,6 +3615,8 @@
     duck.vy += gravity;
     duck.y += duck.vy;
     duck.wing += 0.45;
+    for (const t of flapTrail) t.life--;
+    flapTrail = flapTrail.filter((t) => t.life > 0);
     const targetRot = Math.max(-0.4, Math.min(1.1, duck.vy * 0.075));
     duck.rotation += (targetRot - duck.rotation) * 0.2;
 
@@ -3556,6 +3676,7 @@
     updateParticles();
     updatePopups();
 
+    checkNearMiss();
     if (collidesPipes() || checkFoeHitDuck()) die();
   }
 
@@ -3597,8 +3718,10 @@
     drawSparkles();
     drawEggSplats();
     drawAimAssist();
+    drawFlapTrail();
     drawDuck();
     drawPopups();
+    drawVignette();
 
     ctx.restore();
   }
