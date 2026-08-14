@@ -1,26 +1,82 @@
-# Session handoff — Facebook Games Studio + Word Streak Duels
+# Session handoff — Games Studio
 
-**Last updated:** 2026-08-14 (Plan next research desk added)  
-**Status:** Game soft-shipped on Production; studio site + privacy **LIVE**; **Business verification SUBMITTED** (~2 working days). Studio now switches **Facebook Instant Games** ↔ **Android Play** (games + apps).  
-**Local project:** Desktop `Facebook-Games` folder  
-**Remote:** `origin` / `main` (repo is **public** so free GitHub Pages works)
+**Last updated:** 2026-08-14 (break — Farm Flapper harvest balloon shipped, studio dual-platform locked in)  
+**Local project:** `C:\Users\chris\OneDrive\Desktop\Facebook-Games`  
+**Remote:** `origin` / `main` — https://github.com/aipagesnow/Facebook-Games  
+**How to resume:** `git pull` on `main`, open Grok Build on this folder, relaunch `Launch Facebook Games Studio.bat`  
+**Latest commit at this pause:** confirm with `git log -1` (handoff + JSON comma fix after `865ff4a` harvest balloon)
+
+---
+
+## Where we stopped (2026-08-14 break)
+
+Taking a break. Studio + Farm Flapper improvements are **committed and pushed**. Do not import more games by dropping a folder — future titles use **Plan next → paste into Grok Build**.
+
+### Done this stretch (lock this in)
+
+| Area | What landed |
+|------|-------------|
+| Dual studio | Sidebar **Facebook / Android** switch. Separate packs, library, Play Console vs FB Upload |
+| Plan next | Builds a **paste prompt** (catalog included). No API key |
+| Build prompt | **Copy build prompt** on pack + library |
+| Ship board | Per-title checklist + live-ops next action / date |
+| Cross-platform | **Consider for Android/Facebook** → candidate pack + **evaluate GO/NO-GO** before any port |
+| QoL | New-pack banner, art prompts, store links, pack status, library remove, ZIP/AAB dates |
+| Farm Flapper | One-time import on **both** sides; visual polish; **harvest balloon** (multiplier = eggs hauled into balloon only) |
+
+### Farm Flapper — pick up here
+
+Playable source (Facebook **and** Android wrap the same files): `games/farm-flapper/`
+
+| Item | Value |
+|------|--------|
+| Title | Farm Flapper |
+| Slug | `farm-flapper` |
+| FB pack | `info-packs/farm-flapper/` |
+| FB listing | `games/farm-flapper/fb-listing.json` |
+| Upload zip (when you make it) | `games/farm-flapper-upload.zip` — **not** Word Streak’s `games/game.zip` |
+| Android pack | `android-packs/farm-flapper/` (PORT-DECISION = **GO**) |
+| Android workspace | `android-apps/farm-flapper/` |
+| Package | `com.apexarcade.farmflapper` — create Play app as **Game** |
+| Privacy draft | `docs/privacy-farm-flapper.html` (not necessarily live on Pages yet) |
+| Tagline | `Flap, shoot eggs, save the farm!` |
+| Latest play feel | Balloon on the right lowers a basket; eggs in the basket are **not** scored until hoisted into the gondola. Crash before hoist = those eggs lost |
+| Android listing version | v1.3 / versionCode 3 (confirm in `android-apps/farm-flapper/android-listing.json`) |
+
+**Still needed for Farm Flapper (next session):**
+
+1. Store art (use **Copy art prompt** on FB Upload / Play Console media rows).
+2. Zip Instant Game → Meta Upload Version.
+3. Capacitor wrap + signed AAB for Play Internal testing.
+4. Host privacy HTML on GitHub Pages if not already (`docs/privacy-farm-flapper.html`).
+5. Create Meta Instant Game app + Play Console Game; save App ID / package in Library.
+6. Tick **Ship board** as you go.
+
+Original Desktop `flappy-duck` folder was **not** modified. Studio copy is the source of truth now.
+
+### Word Streak Duels — still waiting on Meta
+
+Unchanged from the earlier break: **Business verification SUBMITTED**. Next is Verified → App Review → Publish (Live). Details below.
 
 ---
 
 ## Resume checklist (when you’re back)
 
-1. Open project folder; optional `git pull` on `main`.  
-2. Check Meta: [Security Centre](https://business.facebook.com/settings/security) → **Apex Arcade Studio** → Business verification status.  
-3. **If Verified:**
-   - [developers.facebook.com](https://developers.facebook.com) → **Word Streak Duels**  
-   - Finish any **App Review** items  
-   - **Publish** (app still **Unpublished** until then)  
-   - Confirm privacy URL in Instant Games **Details**  
-   - Friend test: https://www.facebook.com/gaming/play/1593839865675820/  
-4. **If Rejected:** read Meta’s reason → fix docs/details → resubmit (see `docs/BUSINESS-VERIFICATION.md`). Screenshot + continue with Grok.  
-5. Ads: streak freeze may still no-fill; retest on **Facebook mobile app** after Live/placement matures.
+1. `cd` to Desktop `Facebook-Games`; `git pull` on `main`.
+2. Open Grok Build pointed at this project.
+3. Double-click `Launch Facebook Games Studio.bat`.
+4. **Meta BV:** [Security Centre](https://business.facebook.com/settings/security) → **Apex Arcade Studio**.
+5. **If Verified:** [developers.facebook.com](https://developers.facebook.com) → **Word Streak Duels** → finish **App Review** → **Publish** (app is still **Unpublished** until then) → confirm privacy URL in Instant Games **Details** → friend test: https://www.facebook.com/gaming/play/1593839865675820/
+6. **If Rejected:** read Meta’s reason → `docs/BUSINESS-VERIFICATION.md` → screenshot + continue with Grok. Do **not** start a second verification while one is pending.
+7. Optional: Farm Flapper media + zip / AAB (list above).
+8. Future **new** titles: Facebook or Android → **Plan next** → paste prompt here. Do **not** drop another folder in.
+9. Ads (WSD): streak freeze may still no-fill; retest on **Facebook mobile app** after Live/placement matures.
 
-### Quick paths
+---
+
+## Quick paths
+
+### Word Streak Duels
 
 | Item | Path / value |
 |------|----------------|
@@ -42,7 +98,19 @@
 | Connection | **Zero permissions** (leave as-is) |
 | GitHub Pages | Branch `main` · folder `/docs` · repo **public** |
 
-**Note:** `data/library/*.json` is **gitignored**. If Library empty after clone, re-add in Library UI from `fb-listing.json`.
+### Farm Flapper
+
+| Item | Path / value |
+|------|----------------|
+| Shared playable | `games/farm-flapper/` (`index.html`, `game.js`, `style.css`) |
+| Harvest mechanic | `games/farm-flapper/game.js` — `harvest` object, `updateHarvest`, `drawHarvestRig` |
+| Facebook pack | `info-packs/farm-flapper/` |
+| Android pack | `android-packs/farm-flapper/` |
+| Android listing | `android-apps/farm-flapper/android-listing.json` |
+| Privacy draft | `docs/privacy-farm-flapper.html` |
+| Plan-next skill | `.grok/skills/plan-next/SKILL.md` |
+
+**Note:** `data/library/*.json` and `data/android-library/*.json` are **gitignored**. If Library is empty after clone, re-add in Library UI from `fb-listing.json` / `android-listing.json`.
 
 ---
 
@@ -93,58 +161,64 @@
 | Publish / Live | **Unpublished** until checklist complete |
 | Ads | Placement exists; fill often missing |
 
-### Not done / later
+### Not done / later (Word Streak)
 
-- [ ] Business verification **approved** (waiting on Meta)  
-- [ ] App Review + Publish (Live)  
-- [ ] Friend test without tester role  
-- [ ] Real ad fill reliable on mobile  
-- [ ] Shared multiplayer leaderboards (deferred)  
-- [ ] Optional media / App Page / better preview video  
+- [ ] Business verification **approved** (waiting on Meta)
+- [ ] App Review + Publish (Live)
+- [ ] Friend test without tester role
+- [ ] Real ad fill reliable on mobile
+- [ ] Shared multiplayer leaderboards (deferred)
+- [ ] Optional media / App Page / better preview video
 
 ---
 
 ## Product decisions (don’t re-litigate)
 
-1. **Solo launch** — personal bests + share; not multiplayer cloud ranks.  
-2. **Publisher** always **Apex Arcade Studio**.  
-3. **Taglines ≤ 40 characters** for Meta Details.  
-4. **Category:** Trivia and Word.  
-5. **Ads:** rewarded only after scored round (streak freeze).  
-6. **App Page:** optional later.  
-7. **Zero permissions:** keep.  
-8. **One Business** for all games; **one Monetization property per game**.  
-9. **Indie path:** sole prop / not registered / legal name = person; brand = Apex Arcade Studio.  
+1. **Solo launch** — personal bests + share; not multiplayer cloud ranks.
+2. **Publisher** always **Apex Arcade Studio**.
+3. **Taglines ≤ 40 characters** for Meta Details.
+4. **Category (WSD):** Trivia and Word.
+5. **Ads:** rewarded only after scored round (streak freeze).
+6. **App Page:** optional later.
+7. **Zero permissions:** keep.
+8. **One Business** for all games; **one Monetization property per game**.
+9. **Indie path:** sole prop / not registered / legal name = person; brand = Apex Arcade Studio.
 10. **Public site:** GitHub Pages only; no Source link; no local Windows paths in published files.
+11. **No more folder-drop imports.** Farm Flapper was the one-time exception. New titles: Plan next → paste into Grok Build.
+12. **Plan next is a paste prompt**, not an in-app LLM call. No `XAI_API_KEY` required.
+13. **Cross-platform:** candidate pack first; Grok writes **GO / NO-GO** before any port. Farm Flapper is already **GO**.
 
 ---
 
-## Plan next (in-studio research desk, 2026-08-14)
+## How the studio works now (do not re-litigate)
 
-Sidebar **Plan next** copies a Grok Build prompt (catalog baked in). User pastes it into this chat with the project open. No API key.
+- **Facebook | Android** switch is the top of the sidebar.
+- **Plan next** = copy prompt → paste into Grok Build on this repo. No xAI key required.
+- **Copy build prompt** = after a pack exists, paste here to implement the game.
+- **Ship board** = what is actually done toward Live / Production.
+- **Consider for other platform** = optional. Writes a *candidate* pack. Grok must **GO / NO-GO** before a port. Farm Flapper already has a **GO** because this import was requested on both stores.
+- **Do not** add more games by copying a Desktop folder. Farm Flapper was the exception.
 
-**Build prompt** on each pack / library card. **Ship board** (`/:platform/ship`) is the per-title Live/Play checklist. **Consider for Android/Facebook** on a pack writes a candidate on the other side + evaluate prompt (GO/NO-GO before any port).
+---
 
-### One-time import (2026-08-14)
+## Git / save status at this pause
 
-**Farm Flapper** (from Desktop `flappy-duck`) is on **both** sides. Do not import more games this way.
+Expected after the handoff commit + push:
 
-| Item | Path |
-|------|------|
-| Game | `games/farm-flapper/` |
-| FB pack | `info-packs/farm-flapper/` |
-| FB listing | `games/farm-flapper/fb-listing.json` |
-| Android pack | `android-packs/farm-flapper/` |
-| Android listing | `android-apps/farm-flapper/android-listing.json` |
-| Privacy | `docs/privacy-farm-flapper.html` |
-| Package | `com.apexarcade.farmflapper` |
-| Tagline | `Flap, shoot eggs, save the farm!` |
+- Branch: `main`
+- Remote: `origin`
+- Includes: dual-platform studio, Plan/build/ship/cross-platform, Farm Flapper import + visual polish + harvest balloon, this handoff
 
-- Inventories packs + library + workspaces on **both** platforms (no remakes).
-- Default: mostly new titles. Optional: allow a genuine better-version.
-- Android can pick game vs app (`auto` / force).
-- Writes a full info pack + `MARKET-RESEARCH.md` + skeleton.
-- History: Electron userData `research-history.json`.
+Still local-only (gitignored):
+
+- `data/library/*.json` and `data/android-library/*.json` (Library UI)
+- `data/ship-boards/**/*.json` (checklist ticks)
+- `data/research-inbox/*.json`
+- `node_modules/`, `dist/`
+
+If Library is empty after a fresh clone, re-add Farm Flapper / Word Streak from their `fb-listing.json` / `android-listing.json` in the Library UI.
+
+---
 
 ## Android / Play side (added 2026-08-14)
 
@@ -157,44 +231,35 @@ Sidebar **Facebook | Android** switch remaps Dashboard, Info Packs, Library, and
 | Sample Play **app** | `android-packs/sample-focus-pulse/` |
 | Android workspace | `android-apps/<slug>/` |
 | WSD Play listing | `android-apps/word-streak-duels/android-listing.json` |
+| Farm Flapper Play listing | `android-apps/farm-flapper/android-listing.json` |
 | Android library JSON | `data/android-library/` (gitignored, like FB library) |
 | Spec | `docs/ANDROID-PACK-SPEC.md` |
 
-Play create-app **Game vs App cannot be changed later**. Word Streak Duels is a **game**. Focus Pulse is a sample **app**.
+Play create-app **Game vs App cannot be changed later**. Word Streak Duels and Farm Flapper are **games**. Focus Pulse is a sample **app**.
 
-HTML5 wrap path: Capacitor around `games/word-streak-duels/` (stub FBInstant; AdMob + Android share). Drop signed `app-release.aab` in the slug folder; **Play Console** page copies listing fields the same way **FB Upload** does for Meta.
-
-## Studio workflow (every future game)
-
-1. Scaffold under `games/<slug>/` + `fb-listing.json` (copy from WSD, edit).  
-2. Create `store-assets/` with required media filenames (see FB Upload media section).  
-3. Library: App ID, paths.  
-4. Studio **FB Upload**: copy fields, open zip folder, check media status.  
-5. Meta: Instant Game only at create → Details → Web hosting → Monetization property → BV if needed → Publish.  
+HTML5 wrap path: Capacitor around `games/<slug>/` (stub FBInstant; AdMob + Android share). Drop signed `app-release.aab` in the slug folder; **Play Console** page copies listing fields the same way **FB Upload** does for Meta.
 
 ---
 
-## Git / save status
+## Studio workflow (every future game)
 
-Expected after this handoff commit + push:
-
-- Branch: `main`  
-- Remote: `origin`  
-- Includes: studio Pages site, privacy HTML, BV guide, scrubbed paths, this handoff  
-
-Still local-only (gitignored):
-
-- `data/library/*.json`  
-- `node_modules/`, `dist/`  
+1. Facebook or Android → **Plan next** → copy the generated prompt → paste into Grok Build.
+2. Grok writes the info pack / Android pack. Do **not** drop a Desktop folder.
+3. After pack exists, **Copy build prompt** → paste here to implement under `games/<slug>/` + `fb-listing.json` (or Android workspace).
+4. Create `store-assets/` with required media filenames (see FB Upload / Play Console media section).
+5. Library: App ID, paths.
+6. Studio **FB Upload** / **Play Console**: copy fields, open zip/AAB folder, check media status.
+7. Meta: Instant Game only at create → Details → Web hosting → Monetization property → BV if needed → Publish.
+8. Play: create as **Game** or **App** (cannot change later) → listing → signed AAB → Internal testing.
 
 ---
 
 ## Suggested order when Meta replies
 
-1. Confirm **Verified** in Security Centre (or fix rejection).  
-2. Privacy URL in Instant Games Details (if missing).  
-3. App Review items Meta shows.  
-4. **Publish** app (Live).  
-5. Friend test play link.  
-6. Optional: retest freeze ads on mobile.  
-7. Optional: next Instant Game using studio.  
+1. Confirm **Verified** in Security Centre (or fix rejection).
+2. Privacy URL in Instant Games Details (if missing).
+3. App Review items Meta shows.
+4. **Publish** app (Live).
+5. Friend test play link.
+6. Optional: retest freeze ads on mobile.
+7. Optional: Farm Flapper store art / zip / AAB, or next Instant Game using Plan next.
