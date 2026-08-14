@@ -28,7 +28,18 @@ npm-debug.log*
 data/settings.local.json
 data/library/*.json
 !data/library/.gitkeep
+data/android-library/*.json
+!data/android-library/.gitkeep
+data/research-inbox/*.json
+data/research-inbox/prompt.md
+!data/research-inbox/.gitkeep
+!data/research-inbox/README.md
+data/ship-boards/**/*.json
+!data/ship-boards/**/.gitkeep
 
 # Generated game builds (large)
 games/**/dist/
 games/**/node_modules/
+android-apps/**/dist/
+android-apps/**/node_modules/
+android-apps/**/android/app/build/

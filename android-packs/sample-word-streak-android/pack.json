@@ -1,0 +1,32 @@
+{
+  "id": "sample-word-streak-android",
+  "title": "Word Streak Duels",
+  "slug": "word-streak-duels",
+  "status": "ready",
+  "kind": "game",
+  "platforms": ["android"],
+  "genre": "word",
+  "oneLiner": "60-second daily word ladder — beat your best, keep your streak, share your score.",
+  "inspiredBy": [
+    "Words With Friends-style social word play",
+    "The Facebook Instant Game of the same name"
+  ],
+  "targetAudience": "Casual Android players 18–44 who want a 2–4 minute word break. Same loop as the Instant Game, native Play install, AdMob rewarded freeze.",
+  "createdAt": "2026-08-14",
+  "tags": ["word", "daily", "streak", "casual", "capacitor"],
+  "scores": {
+    "playFit": 9,
+    "smallTeamBuild": 8,
+    "wrapExistingHtml": 9,
+    "growthTrajectory": 7,
+    "liveOpsBurden": 4
+  },
+  "pillars": {
+    "coreLoop": "See seed → chain words in 60s (last letter rule) → beat personal best",
+    "social": "Share score via Android share sheet; Play Games leaderboards optional later",
+    "retention": "Daily ladder seed + streak freeze (rewarded ad) + weekly themed packs",
+    "monetization": "AdMob rewarded for hint / streak freeze; optional Play Billing cosmetics later",
+    "discovery": "512 icon of gold letter tiles; 1024×500 feature graphic of a word chain race",
+    "liveOps": "Theme weeks, limited ladders, seasonal dictionaries"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "sample-focus-pulse",
+  "title": "Focus Pulse",
+  "slug": "focus-pulse",
+  "status": "ready",
+  "kind": "app",
+  "platforms": ["android"],
+  "genre": "productivity",
+  "oneLiner": "A 60-second focus pulse with a gentle streak — a utility app, not a game.",
+  "inspiredBy": ["Tiny countdown utilities", "Habit streak trackers"],
+  "targetAudience": "Adults who want a one-tap 60s reset without a game loop or social feed.",
+  "createdAt": "2026-08-14",
+  "tags": ["timer", "focus", "utility", "streak"],
+  "scores": {
+    "playFit": 8,
+    "smallTeamBuild": 9,
+    "utilityClarity": 8,
+    "growthTrajectory": 6,
+    "liveOpsBurden": 2
+  },
+  "pillars": {
+    "coreLoop": "Tap start → 60s pulse → log completion → optional share",
+    "social": "Optional share of today’s count — no accounts",
+    "retention": "Local daily streak only",
+    "monetization": "None in v1; optional remove-ads later via Play Billing",
+    "discovery": "Calm clock-mark icon; feature graphic shows a single 60 on a dark field",
+    "liveOps": "Almost none — maybe seasonal palettes"
+  }
+}

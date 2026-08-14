@@ -5,8 +5,11 @@ import { useAutoRefresh } from '../hooks/useAutoRefresh';
 import type { InfoPackSummary } from '../types/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { CopyButton } from '../components/CopyButton';
+import { usePlatform } from '../platform/usePlatform';
+import { isFreshPack } from '../lib/storeLinks';
 
 export function PacksPage() {
+  const { platform, config, base, isAndroid } = usePlatform();
   const [packs, setPacks] = useState<InfoPackSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,12 +18,12 @@ export function PacksPage() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const res = await getAPI().listPacks();
+    const res = await getAPI().listPacks(platform);
     setPacks(res.packs);
     setError(res.error);
     setLoading(false);
     setLastRefresh(new Date());
-  }, []);
+  }, [platform]);
 
   useAutoRefresh(refresh);
 
@@ -36,11 +39,8 @@ export function PacksPage() {
     <div>
       <div className="page-header">
         <div>
-          <h1>Game info packs</h1>
-          <p>
-            Upcoming titles from your research pipeline. Open a pack, copy its path, and
-            hand it to Grok to generate the Instant Game and Facebook market package.
-          </p>
+          <h1>{config.packsTitle}</h1>
+          <p>{config.packsLead}</p>
           <p className="live-dot" style={{ marginTop: 8 }}>
             Live scan
             {lastRefresh ? ` · ${lastRefresh.toLocaleTimeString()}` : ''}
@@ -50,21 +50,42 @@ export function PacksPage() {
           <button type="button" className="btn" onClick={() => void refresh()} disabled={loading}>
             {loading ? 'Scanning…' : 'Refresh now'}
           </button>
+          <Link className="btn btn-primary" to={`${base}/plan`}>
+            {config.planButton}
+          </Link>
         </div>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
 
+      {(() => {
+        const newest = packs.find((p) => isFreshPack(p.mtimeMs));
+        if (!newest) return null;
+        return (
+          <div className="alert alert-success">
+            New pack on disk:{' '}
+            <Link to={`${base}/packs/${encodeURIComponent(newest.folderName)}`}>
+              <strong>{newest.manifest?.title || newest.folderName}</strong>
+            </Link>
+            {' — '}open it, copy the build prompt, or send it to the other platform.
+          </div>
+        );
+      })()}
+
       {!loading && packs.length === 0 && !error && (
         <div className="empty-state">
           <h3>No info packs found</h3>
           <p>
-            Set the info packs folder in Settings. When your automated research pipeline
-            is live, finished packs will appear here automatically.
+            {config.emptyPacks}
           </p>
-          <Link className="btn btn-primary" to="/settings">
-            Open Settings
-          </Link>
+          <div className="header-actions" style={{ justifyContent: 'center' }}>
+            <Link className="btn btn-primary" to={`${base}/plan`}>
+              {config.planButton}
+            </Link>
+            <Link className="btn" to={`${base}/settings`}>
+              Open Settings
+            </Link>
+          </div>
         </div>
       )}
 
@@ -79,10 +100,16 @@ export function PacksPage() {
                 {pack.manifest?.genre && (
                   <span className="badge">{pack.manifest.genre}</span>
                 )}
+                {isFreshPack(pack.mtimeMs) && <span className="badge badge-ready">new</span>}
                 {pack.hasSkeleton && <span className="badge">skeleton</span>}
+                {isAndroid && pack.manifest?.kind && (
+                  <span className={`badge ${pack.manifest.kind === 'app' ? 'badge-app' : 'badge-game'}`}>
+                    {pack.manifest.kind}
+                  </span>
+                )}
               </div>
               <h2 className="card-title">
-                <Link to={`/packs/${encodeURIComponent(pack.folderName)}`}>{title}</Link>
+                <Link to={`${base}/packs/${encodeURIComponent(pack.folderName)}`}>{title}</Link>
               </h2>
               <p className="card-desc">{oneLiner}</p>
               <div className="path-box">
@@ -92,7 +119,7 @@ export function PacksPage() {
               <div className="header-actions" style={{ marginTop: 12 }}>
                 <Link
                   className="btn btn-sm btn-primary"
-                  to={`/packs/${encodeURIComponent(pack.folderName)}`}
+                  to={`${base}/packs/${encodeURIComponent(pack.folderName)}`}
                 >
                   Open pack
                 </Link>
@@ -103,6 +130,9 @@ export function PacksPage() {
                 >
                   Open in Explorer
                 </button>
+                <Link className="btn btn-sm" to={`${base}/ship`}>
+                  Ship board
+                </Link>
               </div>
             </article>
           );

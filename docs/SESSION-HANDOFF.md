@@ -1,7 +1,7 @@
 # Session handoff — Facebook Games Studio + Word Streak Duels
 
-**Last updated:** 2026-08-11 (break — BV submitted, waiting on Meta)  
-**Status:** Game soft-shipped on Production; studio site + privacy **LIVE**; **Business verification SUBMITTED** (~2 working days). Next: wait for Verified → App Review → Publish (Live).  
+**Last updated:** 2026-08-14 (Plan next research desk added)  
+**Status:** Game soft-shipped on Production; studio site + privacy **LIVE**; **Business verification SUBMITTED** (~2 working days). Studio now switches **Facebook Instant Games** ↔ **Android Play** (games + apps).  
 **Local project:** Desktop `Facebook-Games` folder  
 **Remote:** `origin` / `main` (repo is **public** so free GitHub Pages works)
 
@@ -118,6 +118,36 @@
 10. **Public site:** GitHub Pages only; no Source link; no local Windows paths in published files.
 
 ---
+
+## Plan next (in-studio research desk, 2026-08-14)
+
+Sidebar **Plan next** copies a Grok Build prompt (catalog baked in). User pastes it into this chat with the project open. No API key.
+
+**Build prompt** on each pack / library card. **Ship board** (`/:platform/ship`) is the per-title Live/Play checklist. **Consider for Android/Facebook** on a pack writes a candidate on the other side + evaluate prompt (GO/NO-GO before any port).
+
+- Inventories packs + library + workspaces on **both** platforms (no remakes).
+- Default: mostly new titles. Optional: allow a genuine better-version.
+- Android can pick game vs app (`auto` / force).
+- Writes a full info pack + `MARKET-RESEARCH.md` + skeleton.
+- History: Electron userData `research-history.json`.
+
+## Android / Play side (added 2026-08-14)
+
+Sidebar **Facebook | Android** switch remaps Dashboard, Info Packs, Library, and upload.
+
+| Item | Path |
+|------|------|
+| Android packs | `android-packs/` |
+| Sample Play **game** | `android-packs/sample-word-streak-android/` |
+| Sample Play **app** | `android-packs/sample-focus-pulse/` |
+| Android workspace | `android-apps/<slug>/` |
+| WSD Play listing | `android-apps/word-streak-duels/android-listing.json` |
+| Android library JSON | `data/android-library/` (gitignored, like FB library) |
+| Spec | `docs/ANDROID-PACK-SPEC.md` |
+
+Play create-app **Game vs App cannot be changed later**. Word Streak Duels is a **game**. Focus Pulse is a sample **app**.
+
+HTML5 wrap path: Capacitor around `games/word-streak-duels/` (stub FBInstant; AdMob + Android share). Drop signed `app-release.aab` in the slug folder; **Play Console** page copies listing fields the same way **FB Upload** does for Meta.
 
 ## Studio workflow (every future game)
 

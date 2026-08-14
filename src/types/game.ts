@@ -29,6 +29,15 @@ export interface LiveOpsPlan {
   analyticsEvents?: string[];
 }
 
+export interface PlayConsoleChecklist {
+  signedAab: boolean;
+  targetSdkCurrent: boolean;
+  privacyPolicyUrl: boolean;
+  dataSafetyForm: boolean;
+  contentRating: boolean;
+  storeListingMinimums: boolean;
+}
+
 export interface InstantGamesChecklist {
   sub3sLoadTarget: boolean;
   zeroPermissions: boolean;

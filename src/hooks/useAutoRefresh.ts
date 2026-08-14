@@ -44,7 +44,8 @@ export function useAutoRefresh(
       window.removeEventListener('fgs:refresh', onGlobal);
       if (id) window.clearInterval(id);
     };
-  }, [enabled, intervalMs, run]);
+    // Re-run when `load` identity changes (Facebook ↔ Android) so pages do not keep stale data.
+  }, [enabled, intervalMs, run, load]);
 }
 
 /** Fire from the sidebar so every page reloads its data. */

@@ -14,6 +14,8 @@ info-packs/
     DISCOVERY.md
     LIVEOPS.md
     UPLOAD-CHECKLIST.md
+    MARKET-RESEARCH.md      # written by Plan next
+    RESEARCH-RUN.json       # written by Plan next
     skeleton/
       index.html
       styles.css
@@ -67,4 +69,8 @@ info-packs/
 - Scans **immediate subfolders** of the info-packs path.
 - Reads `pack.json` when present.
 - Shows absolute path for copy/paste into Grok.
-- Does not modify pack files (read-oriented).
+- Does not modify pack files (read-oriented), except **Plan next**, which *creates* a new pack folder after research.
+
+Android / Play packs use a parallel folder (`android-packs/`) and `kind: game | app`. See [`ANDROID-PACK-SPEC.md`](ANDROID-PACK-SPEC.md).
+
+Generated packs also include `MARKET-RESEARCH.md` (sources, rejected ideas) and `RESEARCH-RUN.json` (run metadata).

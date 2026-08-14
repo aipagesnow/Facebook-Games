@@ -23,6 +23,12 @@ import {
 } from '../lib/fbMedia';
 import type { PublishedGame } from '../types/api';
 import { UseCasePickerGuide } from './UseCasePickerGuide';
+import { formatAssetPrompt } from '../lib/assetPrompts';
+import {
+  facebookAppDashboard,
+  facebookPlayLink,
+  formatMtime,
+} from '../lib/storeLinks';
 
 interface Props {
   game: PublishedGame;
@@ -57,14 +63,24 @@ function MediaSlotRow({
   exists,
   onOpenFolder,
   onOpenFile,
+  title,
+  extraBrief,
 }: {
   slot: MediaSlot;
   buildFolder: string;
   exists: boolean | null;
   onOpenFolder: () => void;
   onOpenFile: (path: string) => void;
+  title?: string;
+  extraBrief?: string;
 }) {
   const path = mediaFilePath(buildFolder, slot.fileName);
+  const artPrompt = formatAssetPrompt({
+    title: title || 'Studio title',
+    slot,
+    extraBrief,
+    platform: 'facebook',
+  });
   const badge =
     slot.priority === 'required' ? (
       <span className="badge" style={{ background: 'rgba(220,80,60,0.2)', color: '#ffb4a8' }}>
@@ -121,6 +137,7 @@ function MediaSlotRow({
           </button>
         ) : null}
         <CopyButton text={path} label="Copy path" className="btn btn-sm" />
+        <CopyButton text={artPrompt} label="Copy art prompt" className="btn btn-sm" />
       </div>
     </div>
   );
@@ -143,6 +160,7 @@ export function FbListingPanel({ game, compact }: Props) {
 
   const [openToast, setOpenToast] = useState<string | null>(null);
   const [existsMap, setExistsMap] = useState<Record<string, boolean>>({});
+  const [zipMtime, setZipMtime] = useState<string>('');
 
   const required = useMemo(() => requiredMediaSlots(), []);
   const optional = useMemo(() => optionalMediaSlots(), []);
@@ -164,8 +182,13 @@ export function FbListingPanel({ game, compact }: Props) {
     if (assetsDir) {
       next.assetsDir = await api.pathExists(assetsDir);
     }
+    if (zipPath && typeof api.pathStat === 'function') {
+      const st = await api.pathStat(zipPath);
+      setZipMtime(st.exists && st.mtimeMs ? formatMtime(st.mtimeMs) : '');
+      next.zip = Boolean(st.exists);
+    }
     setExistsMap(next);
-  }, [buildFolder, privacyLocal, assetsDir]);
+  }, [buildFolder, privacyLocal, assetsDir, zipPath]);
 
   useEffect(() => {
     void refreshExists();
@@ -244,6 +267,22 @@ export function FbListingPanel({ game, compact }: Props) {
         {game.facebookAppId ? (
           <CopyButton text={game.facebookAppId} label="Copy App ID" className="btn btn-sm" />
         ) : null}
+        <button
+          type="button"
+          className="btn btn-sm"
+          onClick={() => void getAPI().openExternal(facebookAppDashboard(game.facebookAppId))}
+        >
+          Open Meta app
+        </button>
+        {game.facebookAppId ? (
+          <button
+            type="button"
+            className="btn btn-sm"
+            onClick={() => void getAPI().openExternal(facebookPlayLink(game.facebookAppId))}
+          >
+            Open play link
+          </button>
+        ) : null}
         <button type="button" className="btn btn-sm" onClick={() => void refreshExists()}>
           Refresh media status
         </button>
@@ -281,6 +320,9 @@ export function FbListingPanel({ game, compact }: Props) {
           multiline
         />
         <CopyField label="ZIP file path (drag this file into Meta — not the path text)" value={zipPath} />
+        <p style={{ margin: '0 0 10px', fontSize: 12, color: zipMtime ? 'var(--text-dim)' : '#ffb070' }}>
+          {zipMtime ? `ZIP last modified: ${zipMtime}` : 'ZIP not on disk yet — do not upload a missing/stale file.'}
+        </p>
         <CopyField label="Entry file" value={listing.entryFile || 'index.html'} />
         <CopyField label="Config file" value={listing.configFile || 'fbapp-config.json'} />
         <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--text-dim)' }}>
@@ -382,6 +424,16 @@ export function FbListingPanel({ game, compact }: Props) {
             exists={existsMap[slot.id] ?? null}
             onOpenFolder={() => void openFolder(assetsDir, 'store-assets opened')}
             onOpenFile={(p) => void showFile(p)}
+            title={listing.title || game.title}
+            extraBrief={
+              slot.id.startsWith('icon')
+                ? listing.iconBrief
+                : slot.id === 'cover'
+                  ? listing.coverBrief
+                  : slot.id.startsWith('preview')
+                    ? listing.videoBrief
+                    : listing.shareImageIdea
+            }
           />
         ))}
 
@@ -398,6 +450,8 @@ export function FbListingPanel({ game, compact }: Props) {
                 exists={existsMap[slot.id] ?? null}
                 onOpenFolder={() => void openFolder(assetsDir, 'store-assets opened')}
                 onOpenFile={(p) => void showFile(p)}
+                title={listing.title || game.title}
+                extraBrief={listing.coverBrief}
               />
             ))}
           </>

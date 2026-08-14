@@ -1,6 +1,6 @@
 # Design judgment — pipeline, filter, skeleton, info packs
 
-This document captures professional recommendations that feed **Facebook Games Studio** (this app). The research pipeline itself is not built yet; the studio is designed to consume its output.
+This document captures professional recommendations that feed **Facebook Games Studio** (this app). The research pipeline now lives **inside the studio** as **Plan next** (Facebook and Android each have their own desk). It is the single long pass recommended below: inventory → live research → filter → red team → one pack.
 
 ---
 

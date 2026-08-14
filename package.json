@@ -1,7 +1,7 @@
 {
   "name": "facebook-games-studio",
   "version": "0.1.0",
-  "description": "Local studio for Facebook Instant Games — dashboard, library, and game info pack pipeline access",
+  "description": "Local studio for Facebook Instant Games and Android Play apps/games — dashboard, library, and info pack pipeline",
   "main": "electron/main.cjs",
   "type": "module",
   "author": "aipagesnow",

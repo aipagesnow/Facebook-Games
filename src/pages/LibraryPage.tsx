@@ -1,16 +1,25 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getAPI } from '../lib/api';
 import { useAutoRefresh } from '../hooks/useAutoRefresh';
 import type { PublishedGame } from '../types/api';
 import { StatusBadge } from '../components/StatusBadge';
 import { CopyButton } from '../components/CopyButton';
 import { FbListingPanel } from '../components/FbListingPanel';
+import { AndroidListingPanel } from '../components/AndroidListingPanel';
+import { usePlatform } from '../platform/usePlatform';
+import type { ProductKind } from '../platform/config';
+import { Link } from 'react-router-dom';
+import { buildPromptFromLibrary } from '../lib/buildPrompt';
+import { otherPlatform } from '../platform/config';
 
 const emptyForm = {
   title: '',
   slug: '',
   status: 'in-production',
   facebookAppId: '',
+  packageName: '',
+  playConsoleId: '',
+  kind: 'game' as ProductKind,
   packPath: '',
   workspacePath: '',
   genre: '',
@@ -25,6 +34,9 @@ function gameToForm(g: PublishedGame): FormState {
     slug: g.slug || g.id || '',
     status: g.status || 'in-production',
     facebookAppId: g.facebookAppId || '',
+    packageName: g.packageName || '',
+    playConsoleId: g.playConsoleId || '',
+    kind: (g.kind === 'app' ? 'app' : 'game') as ProductKind,
     packPath: g.packPath ? String(g.packPath) : '',
     workspacePath: g.workspacePath ? String(g.workspacePath) : '',
     genre: g.genre || '',
@@ -33,7 +45,9 @@ function gameToForm(g: PublishedGame): FormState {
 }
 
 export function LibraryPage() {
+  const { platform, config, isAndroid, base } = usePlatform();
   const [games, setGames] = useState<PublishedGame[]>([]);
+  const [catalogSkip, setCatalogSkip] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [toast, setToast] = useState<string | null>(null);
@@ -43,13 +57,24 @@ export function LibraryPage() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   const refresh = useCallback(async () => {
-    const res = await getAPI().listLibrary();
+    const api = getAPI();
+    const res = await api.listLibrary(platform);
     setGames(res.games);
     setError(res.error);
     setLastRefresh(new Date());
-  }, []);
+    if (typeof api.getResearchCatalog === 'function') {
+      const cat = await api.getResearchCatalog();
+      setCatalogSkip((cat.items || []).map((i) => i.title).filter(Boolean));
+    }
+  }, [platform]);
 
   useAutoRefresh(refresh);
+
+  useEffect(() => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setExpandedId(null);
+  }, [platform]);
 
   function openNew() {
     setForm(emptyForm);
@@ -61,6 +86,22 @@ export function LibraryPage() {
     setEditingId(g.id);
     // scroll form into view-ish
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function removeGame(g: PublishedGame) {
+    const ok = window.confirm(
+      `Remove “${g.title}” from the ${isAndroid ? 'Android' : 'Facebook'} library? Packs and game folders stay on disk.`
+    );
+    if (!ok) return;
+    const res = await getAPI().deleteLibraryGame(g.id, platform);
+    if (!res.ok) {
+      setToast(res.error || 'Could not delete');
+      window.setTimeout(() => setToast(null), 2200);
+      return;
+    }
+    setToast('Removed from library');
+    window.setTimeout(() => setToast(null), 1600);
+    await refresh();
   }
 
   function closeForm() {
@@ -81,14 +122,20 @@ export function LibraryPage() {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
 
-    await getAPI().saveLibraryGame({
-      ...(existing || {}),
-      ...form,
-      id,
-      slug: form.slug.trim() || id,
-      facebookAppId: form.facebookAppId.trim(),
-      publishedAt: existing?.publishedAt || new Date().toISOString(),
-    });
+    await getAPI().saveLibraryGame(
+      {
+        ...(existing || {}),
+        ...form,
+        id,
+        slug: form.slug.trim() || id,
+        facebookAppId: form.facebookAppId.trim(),
+        packageName: form.packageName.trim(),
+        playConsoleId: form.playConsoleId.trim(),
+        kind: form.kind,
+        publishedAt: existing?.publishedAt || new Date().toISOString(),
+      },
+      platform
+    );
 
     closeForm();
     setToast(existing ? 'Game updated (App ID saved)' : 'Game saved to library');
@@ -111,12 +158,8 @@ export function LibraryPage() {
     <div>
       <div className="page-header">
         <div>
-          <h1>Library</h1>
-          <p>
-            Games you have published (or are tracking) on Facebook Instant Games. Keep
-            App IDs, pack links, workspace paths, and <strong>one-click FB listing copy</strong>{' '}
-            in one place.
-          </p>
+          <h1>{config.libraryTitle}</h1>
+          <p>{config.libraryLead}</p>
           <p className="live-dot" style={{ marginTop: 8 }}>
             Live data
             {lastRefresh ? ` · ${lastRefresh.toLocaleTimeString()}` : ''}
@@ -150,9 +193,24 @@ export function LibraryPage() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
-              placeholder="My Instant Game"
+              placeholder={isAndroid ? 'My Play title' : 'My Instant Game'}
             />
           </div>
+          {isAndroid && (
+            <div className="field">
+              <label htmlFor="kind">Kind</label>
+              <select
+                id="kind"
+                value={form.kind}
+                onChange={(e) =>
+                  setForm({ ...form, kind: e.target.value === 'app' ? 'app' : 'game' })
+                }
+              >
+                <option value="game">Game</option>
+                <option value="app">App</option>
+              </select>
+            </div>
+          )}
           <div className="field">
             <label htmlFor="slug">Slug / ID</label>
             <input
@@ -163,22 +221,54 @@ export function LibraryPage() {
               disabled={isEdit}
             />
           </div>
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
-            <label htmlFor="appId">
-              Facebook App ID{' '}
-              <span style={{ fontWeight: 400, color: 'var(--text-dim)' }}>
-                (from Meta URL …/apps/<strong>THIS</strong>/… or App settings → Basic)
-              </span>
-            </label>
-            <input
-              id="appId"
-              value={form.facebookAppId}
-              onChange={(e) => setForm({ ...form, facebookAppId: e.target.value })}
-              placeholder="e.g. 1593839865675820"
-              autoComplete="off"
-              style={{ fontFamily: 'var(--mono)' }}
-            />
-          </div>
+          {isAndroid ? (
+            <>
+              <div className="field" style={{ gridColumn: '1 / -1' }}>
+                <label htmlFor="packageName">
+                  Package name{' '}
+                  <span style={{ fontWeight: 400, color: 'var(--text-dim)' }}>
+                    (applicationId — e.g. com.apexarcade.mygame)
+                  </span>
+                </label>
+                <input
+                  id="packageName"
+                  value={form.packageName}
+                  onChange={(e) => setForm({ ...form, packageName: e.target.value })}
+                  placeholder={config.idPlaceholder}
+                  autoComplete="off"
+                  style={{ fontFamily: 'var(--mono)' }}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="playConsoleId">Play Console app ID (optional)</label>
+                <input
+                  id="playConsoleId"
+                  value={form.playConsoleId}
+                  onChange={(e) => setForm({ ...form, playConsoleId: e.target.value })}
+                  placeholder="numeric id from Play Console URL"
+                  autoComplete="off"
+                  style={{ fontFamily: 'var(--mono)' }}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="field" style={{ gridColumn: '1 / -1' }}>
+              <label htmlFor="appId">
+                Facebook App ID{' '}
+                <span style={{ fontWeight: 400, color: 'var(--text-dim)' }}>
+                  (from Meta URL …/apps/<strong>THIS</strong>/… or App settings → Basic)
+                </span>
+              </label>
+              <input
+                id="appId"
+                value={form.facebookAppId}
+                onChange={(e) => setForm({ ...form, facebookAppId: e.target.value })}
+                placeholder={config.idPlaceholder}
+                autoComplete="off"
+                style={{ fontFamily: 'var(--mono)' }}
+              />
+            </div>
+          )}
           <div className="field">
             <label htmlFor="status">Status</label>
             <input
@@ -212,7 +302,7 @@ export function LibraryPage() {
               id="workspace"
               value={form.workspacePath}
               onChange={(e) => setForm({ ...form, workspacePath: e.target.value })}
-              placeholder="C:\...\games\my-game"
+              placeholder={isAndroid ? 'C:\\...\\android-apps\\my-game' : 'C:\\...\\games\\my-game'}
             />
           </div>
           <div className="field" style={{ gridColumn: '1 / -1' }}>
@@ -236,7 +326,7 @@ export function LibraryPage() {
       {games.length === 0 ? (
         <div className="empty-state">
           <h3>Library is empty</h3>
-          <p>When you publish an Instant Game, add it here for quick access later.</p>
+          <p>{config.emptyLibrary}</p>
           <button type="button" className="btn btn-primary" onClick={openNew}>
             Add first game
           </button>
@@ -250,16 +340,33 @@ export function LibraryPage() {
                 <div className="meta-row">
                   <StatusBadge status={g.status} />
                   {g.genre && <span className="badge">{g.genre}</span>}
-                  {g.fbListing ? <span className="badge">FB copy ready</span> : null}
+                  {isAndroid && (
+                    <span className={`badge ${g.kind === 'app' ? 'badge-app' : 'badge-game'}`}>
+                      {g.kind || 'game'}
+                    </span>
+                  )}
+                  {isAndroid
+                    ? g.androidListing
+                      ? <span className="badge">Play copy ready</span>
+                      : null
+                    : g.fbListing
+                      ? <span className="badge">FB copy ready</span>
+                      : null}
                 </div>
                 <h2 className="card-title">{g.title}</h2>
                 <div className="path-box" style={{ marginTop: 8 }}>
                   <code>
-                    App ID: {g.facebookAppId || '(not set — click Edit details)'}
+                    {isAndroid
+                      ? `Package: ${g.packageName || '(not set — click Edit details)'}`
+                      : `App ID: ${g.facebookAppId || '(not set — click Edit details)'}`}
                   </code>
-                  {g.facebookAppId ? (
-                    <CopyButton text={String(g.facebookAppId)} label="Copy App ID" />
-                  ) : null}
+                  {isAndroid
+                    ? g.packageName
+                      ? <CopyButton text={String(g.packageName)} label="Copy package" />
+                      : null
+                    : g.facebookAppId
+                      ? <CopyButton text={String(g.facebookAppId)} label="Copy App ID" />
+                      : null}
                 </div>
                 {g.notes && <p className="card-desc">{g.notes}</p>}
                 {g.packPath && (
@@ -280,14 +387,43 @@ export function LibraryPage() {
                     className="btn btn-sm btn-primary"
                     onClick={() => openEdit(g)}
                   >
-                    Edit details (App ID)
+                    {isAndroid ? 'Edit details' : 'Edit details (App ID)'}
+                  </button>
+                  <CopyButton
+                    text={buildPromptFromLibrary(platform, g, catalogSkip)}
+                    label="Copy build prompt"
+                    className="btn btn-sm"
+                  />
+                  <Link className="btn btn-sm" to={`${base}/ship`}>
+                    Ship board
+                  </Link>
+                  {g.packPath ? (
+                    <Link
+                      className="btn btn-sm"
+                      to={`${base}/packs/${encodeURIComponent(g.slug || g.id)}`}
+                    >
+                      Consider {otherPlatform(platform) === 'android' ? 'Android' : 'Facebook'}
+                    </Link>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={() => void removeGame(g)}
+                  >
+                    Remove from library
                   </button>
                   <button
                     type="button"
                     className="btn btn-sm"
                     onClick={() => setExpandedId(open ? null : g.id)}
                   >
-                    {open ? 'Hide FB fields' : 'Show FB copy fields'}
+                    {open
+                      ? isAndroid
+                        ? 'Hide Play fields'
+                        : 'Hide FB fields'
+                      : isAndroid
+                        ? 'Show Play copy fields'
+                        : 'Show FB copy fields'}
                   </button>
                   {g.workspacePath ? (
                     <button
@@ -301,8 +437,12 @@ export function LibraryPage() {
                 </div>
                 {open && (
                   <div style={{ marginTop: 16 }}>
-                    <div className="section-title">Facebook listing — click Copy on any row</div>
-                    <FbListingPanel game={g} />
+                    <div className="section-title">
+                      {isAndroid
+                        ? 'Play Console listing — click Copy on any row'
+                        : 'Facebook listing — click Copy on any row'}
+                    </div>
+                    {isAndroid ? <AndroidListingPanel game={g} /> : <FbListingPanel game={g} />}
                   </div>
                 )}
               </article>
