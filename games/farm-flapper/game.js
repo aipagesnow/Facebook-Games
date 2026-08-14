@@ -93,16 +93,109 @@
   let playerId = localStorage.getItem(PLAYER_ID_KEY) || "";
   let windmillAngle = 0;
 
-  // Vertical Moving Farmer popping onto the screen from the right side!
-  const farmer = {
-    x: BASE_W - 18,
-    y: BASE_H / 2,
-    w: 34,
-    h: 46,
-    vy: 1.85,
-    direction: 1,
-    catchAnim: 0,
+  // County-fair balloon: farmer winches a harvest basket on the far right.
+  // Multiplier only counts eggs stowed in the gondola, not ones sitting in the basket.
+  const harvest = {
+    x: BASE_W - 34,
+    balloonY: 58,
+    basketY: 140,
+    targetY: 200,
+    basketW: 38,
+    basketH: 24,
+    phase: "lower",
+    hangTimer: 0,
+    stowTimer: 0,
+    hold: [],
+    cargo: 0,
+    bob: 0,
   };
+
+  function harvestDockY() {
+    return harvest.balloonY + harvest.bob + 62;
+  }
+
+  function pickHarvestTarget() {
+    const minY = 96;
+    const maxY = H - GROUND_H - 56;
+    harvest.targetY = minY + Math.random() * Math.max(36, maxY - minY);
+  }
+
+  function resetHarvest() {
+    harvest.x = W - 34;
+    harvest.balloonY = 58;
+    harvest.phase = "lower";
+    harvest.hold = [];
+    harvest.cargo = 0;
+    harvest.hangTimer = 0;
+    harvest.stowTimer = 0;
+    pickHarvestTarget();
+    harvest.basketY = harvest.balloonY + 48;
+  }
+
+  function harvestBasketBox() {
+    return {
+      x: harvest.x - harvest.basketW / 2 - 2,
+      y: harvest.basketY - 6,
+      w: harvest.basketW + 4,
+      h: harvest.basketH + 10,
+    };
+  }
+
+  function harvestCanCatch() {
+    return harvest.phase === "lower" || harvest.phase === "hang";
+  }
+
+  function updateHarvest() {
+    harvest.bob = Math.sin(frames * 0.045) * 5;
+    const dock = harvestDockY();
+
+    if (harvest.phase === "lower") {
+      harvest.basketY += 2.15;
+      if (harvest.basketY >= harvest.targetY) {
+        harvest.basketY = harvest.targetY;
+        harvest.phase = "hang";
+        harvest.hangTimer = 78;
+      }
+    } else if (harvest.phase === "hang") {
+      harvest.hangTimer--;
+      harvest.basketY = harvest.targetY + Math.sin(frames * 0.16) * 3.5;
+      if (harvest.hangTimer <= 0 || harvest.hold.length >= 4) {
+        harvest.phase = "hoist";
+      }
+    } else if (harvest.phase === "hoist") {
+      harvest.basketY -= 3.4;
+      if (harvest.basketY <= dock) {
+        harvest.basketY = dock;
+        harvest.phase = "stow";
+        harvest.stowTimer = harvest.hold.length ? 26 : 10;
+      }
+    } else if (harvest.phase === "stow") {
+      harvest.stowTimer--;
+      if (harvest.stowTimer <= 0) {
+        const n = harvest.hold.length;
+        if (n > 0 && state === STATE.PLAYING) {
+          gameStats.eggsDelivered += n;
+          harvest.cargo += n;
+          harvest.hold = [];
+          if (liveEggsEl) liveEggsEl.textContent = String(gameStats.eggsDelivered);
+          if (deliveredCountEl) deliveredCountEl.textContent = String(gameStats.eggsDelivered);
+          AudioFX.farmerCheer();
+          popups.push({
+            x: harvest.x - 8,
+            y: harvest.balloonY + harvest.bob + 18,
+            life: 50,
+            text: n === 1 ? "🎈 HAULED +1" : `🎈 HAULED +${n}  x${Math.max(1, gameStats.eggsDelivered)}`,
+            color: "#76ff03",
+            big: true,
+          });
+        } else {
+          harvest.hold = [];
+        }
+        pickHarvestTarget();
+        harvest.phase = "lower";
+      }
+    }
+  }
 
   if (!playerId) {
     playerId =
@@ -849,12 +942,13 @@
     GROUND_H = Math.round(80 * (H / BASE_H));
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-    farmer.x = W - 18;
+    harvest.x = W - 34;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   window.addEventListener("resize", resize);
   window.addEventListener("orientationchange", () => setTimeout(resize, 120));
   resize();
+  resetHarvest();
 
   // ============================================================
   //  RENDERING & BARNYARD VISUAL FX
@@ -1115,107 +1209,185 @@
   }
 
   function drawFarmer() {
-    const fx = farmer.x;
-    const fy = farmer.y;
-    const bounce = Math.sin(frames * 0.1) * 1.8 + (farmer.catchAnim > 0 ? -6 : 0);
-    if (farmer.catchAnim > 0) farmer.catchAnim--;
+    drawHarvestRig();
+  }
 
-    ctx.save();
-    ctx.translate(fx, fy + bounce);
-
-    // Denim Overalls Body
-    const gDenim = ctx.createLinearGradient(-10, 16, 10, 42);
+  function drawHarvestFarmerMini() {
+    ctx.fillStyle = "#d32f2f";
+    ctx.fillRect(-7, 4, 14, 8);
+    const gDenim = ctx.createLinearGradient(-8, 12, 8, 28);
     gDenim.addColorStop(0, "#1976d2");
     gDenim.addColorStop(1, "#0d47a1");
     ctx.fillStyle = gDenim;
-    ctx.fillRect(-10, 16, 20, 26);
-
-    // Brass Buttons on Overall Straps
+    ctx.fillRect(-8, 10, 16, 16);
     ctx.fillStyle = "#ffd700";
     ctx.beginPath();
-    ctx.arc(-6, 18, 2, 0, Math.PI * 2);
-    ctx.arc(6, 18, 2, 0, Math.PI * 2);
+    ctx.arc(-5, 12, 1.4, 0, Math.PI * 2);
+    ctx.arc(5, 12, 1.4, 0, Math.PI * 2);
     ctx.fill();
-
-    // Red Plaid Flannel Shirt
-    ctx.fillStyle = "#d32f2f";
-    ctx.fillRect(-9, 8, 18, 10);
-    ctx.fillStyle = "rgba(0,0,0,0.18)";
-    ctx.fillRect(-9, 12, 18, 2);
-
-    // Head
-    const gSkin = ctx.createRadialGradient(-2, 0, 2, 0, 2, 10);
-    gSkin.addColorStop(0, "#ffe0b2");
-    gSkin.addColorStop(1, "#ffcc80");
-    ctx.fillStyle = gSkin;
+    ctx.fillStyle = "#ffcc80";
     ctx.beginPath();
-    ctx.arc(0, 2, 9.5, 0, Math.PI * 2);
+    ctx.arc(0, 1, 6.5, 0, Math.PI * 2);
     ctx.fill();
-
-    // Rosy Cheeks
-    ctx.fillStyle = "rgba(255, 128, 171, 0.4)";
-    ctx.beginPath();
-    ctx.arc(-5, 4, 3, 0, Math.PI * 2);
-    ctx.arc(5, 4, 3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes with Specular Glint
-    ctx.fillStyle = "#212121";
-    ctx.beginPath();
-    ctx.arc(-3, 0, 1.6, 0, Math.PI * 2);
-    ctx.arc(3, 0, 1.6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(-2.5, -0.5, 0.6, 0, Math.PI * 2);
-    ctx.arc(3.5, -0.5, 0.6, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Friendly Mustache & Smile
     ctx.fillStyle = "#5d4037";
     ctx.beginPath();
-    ctx.ellipse(-3, 4, 4, 2, 0.2, 0, Math.PI * 2);
-    ctx.ellipse(3, 4, 4, 2, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(-2.2, 3, 2.6, 1.3, 0.2, 0, Math.PI * 2);
+    ctx.ellipse(2.2, 3, 2.6, 1.3, -0.2, 0, Math.PI * 2);
     ctx.fill();
-
-    // Straw Hat with Red Band
+    ctx.fillStyle = "#212121";
+    ctx.beginPath();
+    ctx.arc(-2, 0, 1.1, 0, Math.PI * 2);
+    ctx.arc(2, 0, 1.1, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = "#fbc02d";
     ctx.beginPath();
-    ctx.ellipse(0, -6, 16, 4.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, -4, 11, 3, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(0, -7, 9.5, Math.PI, 0);
+    ctx.arc(0, -5, 6.5, Math.PI, 0);
     ctx.fill();
     ctx.fillStyle = "#c62828";
-    ctx.fillRect(-9, -8, 18, 2.5);
+    ctx.fillRect(-6, -5.5, 12, 2);
+  }
 
-    // Woven Wicker Basket held out in front
-    ctx.fillStyle = "#8d6e63";
-    ctx.strokeStyle = "#4e342e";
+  function drawWickerBasket(cx, cy, w, h, eggs, lift) {
+    ctx.save();
+    ctx.translate(cx, cy + (lift || 0));
+    ctx.fillStyle = "#6d4c41";
+    ctx.strokeStyle = "#3e2723";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.ellipse(-14, 18, 14, 10, 0, 0, Math.PI * 2);
+    ctx.moveTo(-w / 2, -h / 2 + 4);
+    ctx.lineTo(-w / 2 + 4, h / 2);
+    ctx.lineTo(w / 2 - 4, h / 2);
+    ctx.lineTo(w / 2, -h / 2 + 4);
+    ctx.closePath();
     ctx.fill();
     ctx.stroke();
-
-    // Wicker Weave Texture Lines
-    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.strokeStyle = "rgba(255, 224, 178, 0.35)";
     ctx.lineWidth = 1;
+    for (let i = -w / 2 + 6; i < w / 2 - 4; i += 6) {
+      ctx.beginPath();
+      ctx.moveTo(i, -h / 2 + 5);
+      ctx.lineTo(i - 2, h / 2 - 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#8d6e63";
+    ctx.fillRect(-w / 2 - 1, -h / 2, w + 2, 5);
+    const show = eggs || [];
+    for (let i = 0; i < show.length; i++) {
+      const ox = -8 + (i % 3) * 8;
+      const oy = -2 - Math.floor(i / 3) * 6;
+      ctx.fillStyle = show[i].special ? "#ffd54f" : "#fff8e1";
+      ctx.beginPath();
+      ctx.ellipse(ox, oy, 5, 3.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#d4a84b";
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawHarvestRig() {
+    const hx = harvest.x;
+    const by = harvest.balloonY + harvest.bob;
+    const stowing = harvest.phase === "stow";
+    const stowK = stowing ? 1 - harvest.stowTimer / 26 : 0;
+
+    ctx.save();
+
+    ctx.strokeStyle = "rgba(62, 39, 35, 0.85)";
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([4, 3]);
     ctx.beginPath();
-    ctx.moveTo(-24, 18);
-    ctx.lineTo(-4, 18);
-    ctx.moveTo(-14, 10);
-    ctx.lineTo(-14, 26);
+    ctx.moveTo(hx - 8, by + 36);
+    ctx.lineTo(hx - 6, harvest.basketY - harvest.basketH / 2);
+    ctx.moveTo(hx + 8, by + 36);
+    ctx.lineTo(hx + 6, harvest.basketY - harvest.basketH / 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const hangingEggs = stowing
+      ? harvest.hold.map((eg, i) => {
+          const k = Math.min(1, stowK + i * 0.08);
+          return { ...eg, _up: k };
+        })
+      : harvest.hold;
+    drawWickerBasket(
+      hx,
+      harvest.basketY,
+      harvest.basketW,
+      harvest.basketH,
+      hangingEggs.filter((e) => !e._up || e._up < 0.85),
+      harvest.phase === "hang" ? Math.sin(frames * 0.2) * 1.2 : 0
+    );
+
+    if (stowing) {
+      for (let i = 0; i < harvest.hold.length; i++) {
+        const k = Math.min(1, stowK + i * 0.1);
+        const ex = hx + (-8 + (i % 3) * 8) * (1 - k);
+        const ey = harvest.basketY + (by + 28 - harvest.basketY) * k;
+        ctx.globalAlpha = 1 - k * 0.15;
+        ctx.fillStyle = "#fff8e1";
+        ctx.beginPath();
+        ctx.ellipse(ex, ey, 5, 3.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    ctx.save();
+    ctx.translate(hx, by);
+    const env = ctx.createLinearGradient(0, -52, 0, 18);
+    env.addColorStop(0, "#fff3e0");
+    env.addColorStop(0.45, "#ef5350");
+    env.addColorStop(1, "#c62828");
+    ctx.fillStyle = env;
+    ctx.beginPath();
+    ctx.ellipse(0, -8, 28, 38, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.22)";
+    for (let s = -18; s <= 18; s += 9) {
+      ctx.beginPath();
+      ctx.moveTo(s * 0.35, -44);
+      ctx.lineTo(s, 18);
+      ctx.lineTo(s + 4, 18);
+      ctx.lineTo(s * 0.35 + 2, -44);
+      ctx.fill();
+    }
+    ctx.fillStyle = "#fff8e1";
+    ctx.beginPath();
+    ctx.ellipse(-8, -22, 7, 5, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#5d4037";
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-12, 18);
+    ctx.lineTo(-8, 36);
+    ctx.moveTo(12, 18);
+    ctx.lineTo(8, 36);
     ctx.stroke();
 
-    // Golden Eggs inside basket
-    ctx.fillStyle = "#fff8e0";
-    ctx.beginPath();
-    ctx.ellipse(-18, 15, 4.5, 3.2, 0, 0, Math.PI * 2);
-    ctx.ellipse(-12, 14, 4.5, 3.2, 0, 0, Math.PI * 2);
-    ctx.ellipse(-14, 17, 4.5, 3.2, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = "#6d4c41";
+    ctx.fillRect(-16, 34, 32, 16);
+    ctx.strokeStyle = "#3e2723";
+    ctx.strokeRect(-16, 34, 32, 16);
 
+    ctx.save();
+    ctx.translate(0, 28);
+    drawHarvestFarmerMini();
+    ctx.restore();
+
+    const cargoShow = Math.min(6, harvest.cargo);
+    for (let i = 0; i < cargoShow; i++) {
+      ctx.fillStyle = "#fff8e1";
+      ctx.beginPath();
+      ctx.ellipse(-10 + (i % 3) * 10, 40 - Math.floor(i / 3) * 5, 4.2, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
     ctx.restore();
   }
 
@@ -2403,9 +2575,7 @@
     duck.vy = 0;
     duck.rotation = 0;
     duck.wing = 0;
-    farmer.x = W - 18;
-    farmer.y = H / 2;
-    farmer.direction = 1;
+    resetHarvest();
     pipes = [];
     foes = [];
     eggs = [];
@@ -3164,13 +3334,7 @@
   }
 
   function updateEggs() {
-    // Farmer Hitbox for Catching Eggs
-    const farmerBox = {
-      x: farmer.x - 16,
-      y: farmer.y - 8,
-      w: farmer.w + 24,
-      h: farmer.h + 16,
-    };
+    const basketBox = harvestBasketBox();
 
     for (const e of eggs) {
       e.life--;
@@ -3201,29 +3365,32 @@
       e.x += e.vx;
       e.y += e.vy;
 
-      // Check collision between Egg & Moving Farmer / Basket!
       if (
         !e._caught &&
-        e.x + e.r >= farmerBox.x &&
-        e.x - e.r <= farmerBox.x + farmerBox.w &&
-        e.y + e.r >= farmerBox.y &&
-        e.y - e.r <= farmerBox.y + farmerBox.h
+        harvestCanCatch() &&
+        harvest.hold.length < 4 &&
+        e.x + e.r >= basketBox.x &&
+        e.x - e.r <= basketBox.x + basketBox.w &&
+        e.y + e.r >= basketBox.y &&
+        e.y - e.r <= basketBox.y + basketBox.h
       ) {
         e._caught = true;
-        gameStats.eggsDelivered++;
-        farmer.catchAnim = 14;
-        if (liveEggsEl) liveEggsEl.textContent = String(gameStats.eggsDelivered);
-        if (deliveredCountEl) deliveredCountEl.textContent = String(gameStats.eggsDelivered);
-        AudioFX.farmerCheer();
-        const curMult = Math.max(1, gameStats.eggsDelivered);
-        popups.push({
-          x: farmer.x - 15,
-          y: farmer.y - 12,
-          life: 45,
-          text: `🧺 EGG CAUGHT! (x${curMult})`,
-          color: "#76ff03",
-          big: true,
+        harvest.hold.push({
+          special: !!e.isSpecial,
+          r: e.r,
         });
+        AudioFX.farmerCatch();
+        popups.push({
+          x: harvest.x - 10,
+          y: harvest.basketY - 18,
+          life: 36,
+          text: harvest.hold.length >= 4 ? "🧺 BASKET FULL!" : "🧺 IN BASKET!",
+          color: "#ffd54f",
+          big: harvest.hold.length >= 4,
+        });
+        if (harvest.hold.length >= 4 && harvest.phase !== "hoist") {
+          harvest.phase = "hoist";
+        }
       }
     }
     eggs = eggs.filter((e) => e.x < W + 30 && e.x > -20 && e.life > 0 && !e._caught);
@@ -3544,6 +3711,7 @@
       groundOffset = (groundOffset + 1.1) % 40;
       skyOffset = (skyOffset + 0.15) % (W + 140);
       updateFeathers();
+      updateHarvest();
       return;
     }
 
@@ -3567,17 +3735,7 @@
       liveTimeEl.textContent = formatLiveTime(gameStats.timeAliveFrames);
     }
 
-    // Update Farmer vertical patrol up and down the far right!
-    farmer.y += farmer.vy * farmer.direction;
-    const farmerMinY = 40;
-    const farmerMaxY = H - GROUND_H - farmer.h - 10;
-    if (farmer.y <= farmerMinY) {
-      farmer.y = farmerMinY;
-      farmer.direction = 1;
-    } else if (farmer.y >= farmerMaxY) {
-      farmer.y = farmerMaxY;
-      farmer.direction = -1;
-    }
+    updateHarvest();
 
     if (shootCooldown > 0) shootCooldown--;
     if (powerRapid > 0) powerRapid--;

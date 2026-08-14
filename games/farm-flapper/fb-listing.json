@@ -41,5 +41,5 @@
     "App ID saved in Studio Library"
   ],
   "uploadZipPath": "games/farm-flapper-upload.zip",
-  "versionComment": "v1.2 visual polish — golden-hour sky, duck trail, near-miss bonus, haptics, farm flowers."
+  "versionComment": "v1.3 harvest balloon — farmer winches a basket, eggs only multiply after they are hauled into the balloon."
 }
