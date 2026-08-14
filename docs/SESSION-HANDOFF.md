@@ -125,6 +125,21 @@ Sidebar **Plan next** copies a Grok Build prompt (catalog baked in). User pastes
 
 **Build prompt** on each pack / library card. **Ship board** (`/:platform/ship`) is the per-title Live/Play checklist. **Consider for Android/Facebook** on a pack writes a candidate on the other side + evaluate prompt (GO/NO-GO before any port).
 
+### One-time import (2026-08-14)
+
+**Farm Flapper** (from Desktop `flappy-duck`) is on **both** sides. Do not import more games this way.
+
+| Item | Path |
+|------|------|
+| Game | `games/farm-flapper/` |
+| FB pack | `info-packs/farm-flapper/` |
+| FB listing | `games/farm-flapper/fb-listing.json` |
+| Android pack | `android-packs/farm-flapper/` |
+| Android listing | `android-apps/farm-flapper/android-listing.json` |
+| Privacy | `docs/privacy-farm-flapper.html` |
+| Package | `com.apexarcade.farmflapper` |
+| Tagline | `Flap, shoot eggs, save the farm!` |
+
 - Inventories packs + library + workspaces on **both** platforms (no remakes).
 - Default: mostly new titles. Optional: allow a genuine better-version.
 - Android can pick game vs app (`auto` / force).

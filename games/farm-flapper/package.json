@@ -1,0 +1,13 @@
+{
+  "name": "flappy-duck",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Flappy Duck — shoot the Mario crew, climb the leaderboard",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

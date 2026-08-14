@@ -1,0 +1,38 @@
+{
+  "id": "farm-flapper",
+  "title": "Farm Flapper",
+  "slug": "farm-flapper",
+  "status": "in-production",
+  "kind": "game",
+  "platforms": ["android"],
+  "genre": "arcade",
+  "oneLiner": "Flap, shoot eggs, scare farm pests, deliver to the farmer, beat the board.",
+  "inspiredBy": [
+    "Flappy Bird–class one-thumb flap",
+    "The Instant Game of the same name"
+  ],
+  "targetAudience": "Casual Android arcade players 13+ who want 1–3 minute farm flap runs.",
+  "createdAt": "2026-08-14",
+  "generatedBy": "one-time-import",
+  "sourcePlatform": "facebook",
+  "sourcePackPath": "info-packs/farm-flapper",
+  "siblingSlug": "farm-flapper",
+  "relationshipToCatalog": "better-version",
+  "tags": ["arcade", "flap", "farm", "casual", "capacitor"],
+  "scores": {
+    "playFit": 8,
+    "smallTeamBuild": 9,
+    "wrapExistingHtml": 9,
+    "differentiation": 8,
+    "retentionRealism": 7,
+    "discoveryClarity": 8
+  },
+  "pillars": {
+    "coreLoop": "Flap → shoot pests → survive → tally → share / retry",
+    "social": "Android share sheet; optional Play Games later",
+    "retention": "Local best + named board",
+    "monetization": "None in v1; optional rewarded continue later",
+    "discovery": "512 duck+egg icon; 1024×500 farm dusk feature graphic",
+    "liveOps": "Seasonal skins, weekend 2× basket"
+  }
+}

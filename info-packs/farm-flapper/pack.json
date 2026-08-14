@@ -1,0 +1,35 @@
+{
+  "id": "farm-flapper",
+  "title": "Farm Flapper",
+  "slug": "farm-flapper",
+  "status": "in-production",
+  "kind": "game",
+  "platforms": ["facebook"],
+  "genre": "arcade",
+  "oneLiner": "Flap, shoot eggs, scare farm pests, deliver to the farmer, beat the board.",
+  "inspiredBy": [
+    "Flappy Bird–class one-thumb flap",
+    "Light arcade shoot-and-collect (eggs, mounts, basket multiplier)"
+  ],
+  "targetAudience": "Casual Facebook / Messenger players 13–44 who want a 1–3 minute arcade burst, not a word puzzle.",
+  "createdAt": "2026-08-14",
+  "generatedBy": "one-time-import",
+  "siblingSlug": "farm-flapper",
+  "tags": ["arcade", "flap", "farm", "casual", "leaderboard"],
+  "scores": {
+    "instantGamesDna": 8,
+    "naturalSocial": 8,
+    "smallTeamBuild": 8,
+    "growthTrajectory": 7,
+    "differentiation": 8,
+    "retentionRealism": 7
+  },
+  "pillars": {
+    "coreLoop": "Flap → shoot pests / grab coins → survive pipes → tally → share or retry",
+    "social": "Challenge Friends via shareAsync; optional Instant Games + web leaderboard",
+    "retention": "Personal best, named board, mounts/clovers/lives keep runs spicy",
+    "monetization": "None in imported v1. Optional rewarded continue later — never mid-flap",
+    "discovery": "Duck + egg on navy farm sky; cover shows flap past hay",
+    "liveOps": "Seasonal farm skins, weekend 2× basket, limited pest events"
+  }
+}

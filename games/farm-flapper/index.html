@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b1e2d" />
+  <meta name="description" content="Farm Flapper — flap, shoot egg missiles, scare away farm pests, ride Oinky, Billy & Wooly, and deliver eggs to the farmer!" />
+  <title>Farm Flapper</title>
+
+  <!-- Google Fonts for sleek gaming typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Facebook Instant Games SDK v6.3 -->
+  <script src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦆</text></svg>" />
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game" width="400" height="600"></canvas>
+
+    <div id="ui">
+      <!-- HUD -->
+      <div id="hud" class="hidden">
+        <div id="hud-top-bar">
+          <div id="hud-left">
+            <div id="extra-lives" class="hidden"><span id="lives-icons"></span></div>
+          </div>
+          <div id="hud-center">
+            <div id="live-time-wrap" title="Time Survived"><span class="clock-icon">⏱️</span> <span id="live-time">00:00</span></div>
+          </div>
+          <div id="hud-right">
+            <div class="stat-badge" title="Coins Collected"><span class="badge-icon">🪙</span> <span id="live-coins">0</span></div>
+            <div class="stat-badge" title="Pests Defeated"><span class="badge-icon">🐭</span> <span id="live-pests">0</span></div>
+            <div class="stat-badge" title="Eggs Delivered"><span class="badge-icon">🧺</span> <span id="live-eggs">0</span></div>
+          </div>
+        </div>
+        <div id="combo" class="hidden">COMBO x1</div>
+        <div id="mult-bar" class="hidden"><span id="mult-label">x1</span></div>
+      </div>
+      <div id="best" class="hidden">Best: 0</div>
+      <div id="player-chip" class="hidden"></div>
+      <div id="delivered-chip" class="hidden"><span class="basket-icon">🧺</span> <span id="delivered-count">0</span></div>
+
+      <!-- START SCREEN -->
+      <div id="start-screen" class="panel panel-wide">
+        <div class="header-badge">BARNYARD ADVENTURE</div>
+        <h1 class="game-title">FARM FLAPPER</h1>
+        <div class="duck-icon floating">🦆</div>
+        <p class="hint">Defend the farm! Pelt pests with eggs & deliver eggs to the farmer!</p>
+
+        <label class="field">
+          <span>PLAYER NAME</span>
+          <input
+            id="player-name"
+            type="text"
+            maxlength="16"
+            placeholder="Enter name to save score..."
+            autocomplete="nickname"
+            enterkeyhint="done"
+          />
+        </label>
+
+        <div class="payouts">
+          <div><span class="dot mouse">🐭</span>Mouse <b>+5</b></div>
+          <div><span class="dot crow">🐦</span>Crow <b>+12</b></div>
+          <div><span class="dot cat">🐱</span>Cat <b>+25</b></div>
+          <div><span class="dot fox">🦊</span>Fox <b>+40</b></div>
+          <div><span class="dot bull">🐂</span>Bull <b>+120</b></div>
+          <div><span class="dot mounts">🐑</span>Wooly the Sheep <b>Mount!</b></div>
+          <div><span class="dot clover">🍀</span>Clover <b>Touch=Shield / Shoot=+150</b></div>
+          <div><span class="dot apple">🍎</span>Red Apple / Corn <b>+1 Life</b></div>
+        </div>
+
+        <div class="board-block">
+          <div class="board-head">
+            <h3>🏆 PERSISTENT LEADERBOARD</h3>
+            <button type="button" id="refresh-board" class="link-btn">🔄 Refresh</button>
+          </div>
+          <ol id="leaderboard-list" class="board-list">
+            <li class="board-empty">Loading scores…</li>
+          </ol>
+          <p id="board-status" class="board-status"></p>
+        </div>
+
+        <p class="controls-line desktop-only">Space / Up / Click — flap · X / Hold F — shoot eggs!</p>
+        <p class="controls-line mobile-only">FLAP left · SHOOT right (hold to spray eggs)</p>
+        <button id="start-btn" type="button" class="btn-primary">▶ PLAY GAME</button>
+      </div>
+
+      <!-- STAGE 1: DEDICATED ANIMATED SCORE TALLY SCREEN -->
+      <div id="tally-screen" class="panel panel-wide hidden">
+        <div class="header-badge">🌟 RUN COMPLETE 🌟</div>
+        <h2 class="tally-screen-title">SCORE TALLY</h2>
+
+        <!-- Animated Tally Breakdown Container -->
+        <div id="tally-container" class="tally-box">
+          <div class="tally-row"><span class="tally-lbl">🐭 Pests Scared Away:</span> <span id="stat-pests-pts" class="tally-val">0 pts</span></div>
+          <div class="tally-row"><span class="tally-lbl">🪙 Coins Collected:</span> <span id="stat-coins-pts" class="tally-val">0 (+0 pts)</span></div>
+          <div class="tally-row"><span class="tally-lbl">⏱️ Time Survived:</span> <span id="stat-time-pts" class="tally-val">0s (+0 pts)</span></div>
+          <div class="tally-divider"></div>
+          <div class="tally-row subtotal"><span class="tally-lbl">⭐ Base Subtotal:</span> <span id="stat-subtotal" class="tally-val">0</span></div>
+          <div class="tally-row mult-row"><span class="tally-lbl">🧺 Farmer Basket Eggs:</span> <span id="stat-delivered-mult" class="tally-val highlight">0 Eggs (x1)</span></div>
+        </div>
+
+        <div class="tally-final-box">
+          <span class="tally-final-lbl">FINAL CALCULATED SCORE</span>
+          <span id="tally-final-score" class="tally-final-val">0</span>
+        </div>
+
+        <button id="tally-continue-btn" type="button" class="btn-primary btn-tally-continue" disabled>TALLYING SCORE...</button>
+      </div>
+
+      <!-- STAGE 2: MAIN RESULTS & LEADERBOARD SCREEN (CLEAN, NO GAME OVER HEADER) -->
+      <div id="game-over" class="panel panel-wide hidden">
+        <div class="header-badge">🏆 RESULTS &amp; LEADERBOARD</div>
+
+        <div class="score-summary">
+          <p class="final-line">Final Score: <span id="final-score">0</span></p>
+          <p class="best-line">Your Best: <span id="final-best">0</span></p>
+        </div>
+
+        <div id="stats-grid" class="stats-grid">
+          <div class="stat-card"><span class="stat-val" id="stat-foes">0</span><span class="stat-lbl">Pests Blasted</span></div>
+          <div class="stat-card"><span class="stat-val" id="stat-shots">0</span><span class="stat-lbl">Eggs Fired</span></div>
+          <div class="stat-card"><span class="stat-val" id="stat-combo">1x</span><span class="stat-lbl">Max Combo</span></div>
+          <div class="stat-card"><span class="stat-val" id="stat-coins">0</span><span class="stat-lbl">Coins/Clovers</span></div>
+        </div>
+
+        <p id="submit-status" class="submit-status"></p>
+
+        <div class="board-block">
+          <div class="board-head">
+            <h3>🏆 TOP SCORES</h3>
+          </div>
+          <ol id="leaderboard-list-go" class="board-list"></ol>
+        </div>
+
+        <div class="btn-row">
+          <button id="retry-btn" type="button" class="btn-primary">▶ TRY AGAIN</button>
+          <button id="fb-share-btn" type="button" class="btn-fb-share">🚀 CHALLENGE FRIENDS</button>
+          <button id="menu-btn" type="button" class="btn-secondary">🏠 MENU</button>
+        </div>
+      </div>
+
+      <!-- TOUCH CONTROLS -->
+      <div id="touch-controls" class="hidden">
+        <button id="flap-btn" class="touch-btn flap-btn" type="button" aria-label="Flap">
+          <span class="btn-icon">🪶</span>
+          <span class="btn-label">FLAP</span>
+        </button>
+        <button id="shoot-btn" class="touch-btn shoot-btn" type="button" aria-label="Shoot">
+          <span class="btn-icon">🥚</span>
+          <span class="btn-label">SHOOT</span>
+        </button>
+      </div>
+
+      <button id="mute-btn" class="mute-btn" type="button" aria-label="Toggle sound" title="Mute">🔊</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
